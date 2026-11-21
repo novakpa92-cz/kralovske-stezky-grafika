@@ -61,7 +61,7 @@ function fx(){if(lb.classList.contains('on')){if(!W)sz();cx.clearRect(0,0,W,H);
  for(let i=P.length-1;i>=0;i--){const p=P[i];
   if(p.k=='d'){p.x+=p.vx;p.y+=p.vy;p.l-=.004;cx.fillStyle='rgba(255,225,170,'+(p.l*.5)+')';cx.beginPath();cx.arc(p.x*W,p.y*H,1.3,0,7);cx.fill()}
   if(p.k=='r'){p.x-=.004;p.y+=.035;cx.strokeStyle='rgba(200,215,235,.45)';cx.beginPath();cx.moveTo(p.x*W,p.y*H);cx.lineTo(p.x*W+5,p.y*H-16);cx.stroke();if(p.y>1.05)p.l=0}
-  if(p.k=='s'){p.y+=.0015*(.5+p.z);p.x+=Math.sin(t/900+p.p)*.0008;cx.fillStyle='rgba(255,255,255,'+(.5+.5*p.z)+')';cx.beginPath();cx.arc(p.x*W,p.y*H,1+2.5*p.z,0,7);cx.fill();if(p.y>1.02)p.l=0}
+  if(p.k=='s'){p.y+=.0012*(.4+p.z);p.x+=Math.sin(t/900+p.p)*.0008;const r=.6+1.4*p.z*p.z,a=.25+.4*p.z;const g=cx.createRadialGradient(p.x*W,p.y*H,0,p.x*W,p.y*H,r*1.8);g.addColorStop(0,'rgba(235,240,248,'+a+')');g.addColorStop(1,'rgba(235,240,248,0)');cx.fillStyle=g;cx.beginPath();cx.arc(p.x*W,p.y*H,r*1.8,0,7);cx.fill();if(p.y>1.02)p.l=0}
   if(p.l<=0)P.splice(i,1)}}
  requestAnimationFrame(fx)}requestAnimationFrame(fx);
 show(0);</script></body></html>
