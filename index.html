@@ -18,8 +18,22 @@ figcaption{font-size:12px;padding:5px 8px;opacity:.75}
 #lb.on{display:flex}#lb img{max-width:96vw;max-height:86vh;border-radius:6px}
 #lb .cap{margin-top:8px;opacity:.8}#lb .nav{position:absolute;top:50%;font-size:40px;color:#fff;background:none;border:0;cursor:pointer;padding:20px}
 #lb .p{left:0}#lb .n{right:0}
+#lb .box{position:relative;overflow:hidden;border-radius:6px;max-width:96vw;max-height:80vh}
+#lb .box img{display:block;max-width:96vw;max-height:80vh;border-radius:0}
+#lb.scene .box img{animation:kb 30s ease-in-out infinite alternate}
+@keyframes kb{to{transform:scale(1.07) translate(-1%,-1%)}}
+#lb.being .box{background:radial-gradient(circle at 50% 62%,#5a4630,#1a130c)}
+#lb.being .box img{transform-origin:50% 92%;animation:breathe 3.6s ease-in-out infinite}
+@keyframes breathe{50%{transform:scaleY(1.018) scaleX(.995)}}
+#lb .ov{position:absolute;inset:0;pointer-events:none}
+#lb .night{background:linear-gradient(#0a1230,#140a1c);mix-blend-mode:multiply;opacity:0;transition:opacity 2.5s}
+#lb.eve .night{opacity:.6}
+#lb .vig{box-shadow:inset 0 0 120px 30px #000a}
+#lb canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#lb .tools{display:flex;gap:8px;margin-top:8px}
+#lb .tools button{font:inherit;font-size:14px;padding:6px 12px;border-radius:6px;border:1px solid #8a6a3a;background:linear-gradient(#f3e3bf,#d9bf8a);color:#2b1d12;cursor:pointer}
 </style></head><body><header><h1>Královské stezky – hotová grafika<span class="count" id="tot"></span></h1><nav id="nav"></nav></header>
-<div id="g" class="grid"></div><div id="lb"><button class="nav p">‹</button><img id="lbi"><div class="cap" id="lbc"></div><button class="nav n">›</button></div>
+<div id="g" class="grid"></div><div id="lb"><button class="nav p">‹</button><div class="box"><img id="lbi"><div class="ov night"></div><canvas id="fx"></canvas><div class="ov vig"></div></div><div class="cap" id="lbc"></div><div class="tools" id="tools"><button data-w="eve">🌙 Večer</button><button data-w="rain">🌧️ Déšť</button><button data-w="snow">❄️ Sníh</button></div><button class="nav n">›</button></div>
 <script>const D=[{"t": "Město", "d": "img", "f": ["mesto-apatykar.webp", "mesto-banka.webp", "mesto-brana.webp", "mesto-chram.webp", "mesto-dum.webp", "mesto-hostinec.webp", "mesto-kolbiste.webp", "mesto-kovar.webp", "mesto-krejci.webp", "mesto-lazebnik.webp", "mesto-mapa.webp", "mesto-paserak.webp", "mesto-pisar.webp", "mesto-pokoj.webp", "mesto-radnice.webp", "mesto-strelmistr.webp", "mesto-trziste.webp", "mesto-vetesnik.webp", "mesto-zbrojir.webp", "mesto-zverinec.webp"]}, {"t": "Mapy oblastí", "d": "img", "f": ["mapa-kanek.webp", "mapa-lezeni.webp", "mapa-malesov.webp", "mapa-rataje.webp", "mapa-sedlec.webp"]}, {"t": "Výpravy", "d": "img/vypravy", "f": ["kanek-01.webp", "kanek-02.webp", "kanek-03.webp", "kanek-04.webp", "kanek-05.webp", "kanek-06.webp", "kanek-07.webp", "kanek-08.webp", "kanek-09.webp", "kanek-10.webp", "kanek-11.webp", "kanek-12.webp", "lezeni-01.webp", "lezeni-02.webp", "lezeni-03.webp", "lezeni-04.webp", "lezeni-05.webp", "lezeni-06.webp", "lezeni-07.webp", "lezeni-08.webp", "lezeni-09.webp", "lezeni-10.webp", "lezeni-11.webp", "lezeni-12.webp", "malesov-01.webp", "malesov-02.webp", "malesov-03.webp", "malesov-04.webp", "malesov-05.webp", "malesov-06.webp", "malesov-07.webp", "malesov-08.webp", "malesov-09.webp", "malesov-10.webp", "malesov-11.webp", "malesov-12.webp", "rataje-01.webp", "rataje-02.webp", "rataje-03.webp", "rataje-04.webp", "rataje-05.webp", "rataje-06.webp", "rataje-07.webp", "rataje-08.webp", "rataje-09.webp", "rataje-10.webp", "rataje-11.webp", "rataje-12.webp", "rataje-13.webp", "rataje-14.webp", "sedlec-01.webp", "sedlec-02.webp", "sedlec-03.webp", "sedlec-04.webp", "sedlec-05.webp", "sedlec-06.webp", "sedlec-07.webp", "sedlec-08.webp", "sedlec-09.webp", "sedlec-10.webp", "sedlec-11.webp", "sedlec-12.webp", "sedlec-13.webp", "sedlec-14.webp", "sedlec-15.webp", "sedlec-16.webp", "sedlec-17.webp", "sedlec-18.webp", "sedlec-19.webp", "sedlec-20.webp", "sedlec-21.webp", "sedlec-22.webp", "sedlec-23.webp", "sedlec-24.webp", "sedlec-25.webp", "sedlec-26.webp", "sedlec-27.webp", "sedlec-28.webp", "sedlec-29.webp", "sedlec-30.webp", "sedlec-31.webp", "sedlec-32.webp", "sedlec-33.webp", "sedlec-34.webp"]}, {"t": "Příběhy", "d": "img/pribehy", "f": ["pribeh-finale.webp", "pribeh-klaster.webp", "pribeh-kostelik.webp", "pribeh-lavka.webp", "pribeh-lis.webp", "pribeh-milir.webp", "pribeh-mlyn.webp", "pribeh-ostruvek.webp", "pribeh-prevoz.webp", "pribeh-sudy.webp", "pribeh-tabor.webp", "pribeh-ves.webp", "pribeh-vez.webp", "pribeh-vuz.webp"]}, {"t": "Situace", "d": "img/situace", "f": ["sit-boss-brana.webp", "sit-brod.webp", "sit-hadanka.webp", "sit-lov-posed.webp", "sit-lov-stopy.webp", "sit-mrtvy-poutnik.webp", "sit-navrat.webp", "sit-noc.webp", "sit-obchodnik.webp", "sit-odpocinek.webp", "sit-pad.webp", "sit-past.webp", "sit-prepadeni.webp", "sit-rybareni.webp", "sit-setkani.webp", "sit-truhla-otevrena.webp", "sit-truhla-zavrena.webp", "sit-vitezstvi.webp", "sit-zamek.webp", "sit-zaval.webp", "sit-zimni-cesta.webp", "sit-zraneny.webp"]}, {"t": "Nepřátelé", "d": "img/bytosti", "f": ["nepritel-divocak.webp", "nepritel-hlidka.webp", "nepritel-krysa.webp", "nepritel-lapka.webp", "nepritel-medved.webp", "nepritel-netopyr.webp", "nepritel-nicema.webp", "nepritel-opilec.webp", "nepritel-pacholek.webp", "nepritel-paserak.webp", "nepritel-strazny.webp", "nepritel-vlk.webp", "nepritel-zbojnik.webp", "nepritel-zbrojnos.webp", "nepritel-zlodej.webp"]}, {"t": "Bossové", "d": "img/bytosti", "f": ["boss-cerny-rytir.webp", "boss-dutohlav.webp", "boss-falesny-kat.webp", "boss-hejtman.webp", "boss-krvavy-kapitan.webp", "boss-krysar.webp", "boss-odpadly-mnich.webp", "boss-polniskudce.webp", "boss-prerostla-krysa.webp", "boss-prevoznik-kuba.webp", "boss-purkrabi-jesek.webp", "boss-rozzureny-medved.webp", "boss-vlk-zabijak.webp", "boss-vztekly-vlk.webp"]}];let cur=0,idx=0;
 const nav=document.getElementById('nav'),g=document.getElementById('g'),lb=document.getElementById('lb');
 document.getElementById('tot').textContent=D.reduce((s,x)=>s+x.f.length,0)+' obrázků';
@@ -28,9 +42,26 @@ function show(i){cur=i;[...nav.children].forEach((b,j)=>b.classList.toggle('on',
 g.className='grid'+(s.d.includes('bytosti')?' tall':'');g.innerHTML='';
 s.f.forEach((f,k)=>{const m=f.replace('.webp','-m.webp');const fig=document.createElement('figure');
 fig.innerHTML='<img loading="lazy" src="'+s.d+'/'+m+'" alt=""><figcaption>'+f.replace('.webp','')+'</figcaption>';fig.onclick=()=>open(k);g.appendChild(fig)});scrollTo(0,0)}
-function open(k){idx=k;const s=D[cur];document.getElementById('lbi').src=s.d+'/'+s.f[k];document.getElementById('lbc').textContent=s.f[k].replace('.webp','');lb.classList.add('on')}
-lb.onclick=e=>{if(e.target==lb||e.target.id=='lbi')lb.classList.remove('on')};
+function open(k){idx=k;W=0;P=[];lb.classList.toggle('being',D[cur].d.includes('bytosti'));lb.classList.toggle('scene',!D[cur].d.includes('bytosti'));const s=D[cur];document.getElementById('lbi').src=s.d+'/'+s.f[k];document.getElementById('lbc').textContent=s.f[k].replace('.webp','');lb.classList.add('on')}
+lb.onclick=e=>{if(e.target==lb||e.target.closest('.box'))lb.classList.remove('on')};
 lb.querySelector('.p').onclick=()=>open((idx-1+D[cur].f.length)%D[cur].f.length);
 lb.querySelector('.n').onclick=()=>open((idx+1)%D[cur].f.length);
 addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;if(e.key=='Escape')lb.classList.remove('on');if(e.key=='ArrowLeft')lb.querySelector('.p').click();if(e.key=='ArrowRight')lb.querySelector('.n').click()});
+
+const cv=document.getElementById('fx'),cx=cv.getContext('2d');let W=0,H=0,wx='',P=[];
+function sz(){const r=cv.getBoundingClientRect();W=cv.width=r.width;H=cv.height=r.height}
+document.getElementById('tools').onclick=e=>{const w=e.target.dataset.w;if(!w)return;e.stopPropagation();
+ if(w=='eve'){lb.classList.toggle('eve');return}wx=wx==w?'':w;P=[]};
+function fx(){if(lb.classList.contains('on')){if(!W)sz();cx.clearRect(0,0,W,H);
+ const being=lb.classList.contains('being');
+ if(!being&&Math.random()<.5)P.push({k:'d',x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*.0004,vy:-.0002-Math.random()*.0003,l:1});
+ if(wx=='rain')for(let i=0;i<6;i++)P.push({k:'r',x:Math.random()*1.2-.1,y:-.05,l:1});
+ if(wx=='snow')for(let i=0;i<2;i++)P.push({k:'s',x:Math.random(),y:-.02,z:Math.random(),p:Math.random()*6,l:1});
+ const t=performance.now();
+ for(let i=P.length-1;i>=0;i--){const p=P[i];
+  if(p.k=='d'){p.x+=p.vx;p.y+=p.vy;p.l-=.004;cx.fillStyle='rgba(255,225,170,'+(p.l*.5)+')';cx.beginPath();cx.arc(p.x*W,p.y*H,1.3,0,7);cx.fill()}
+  if(p.k=='r'){p.x-=.004;p.y+=.035;cx.strokeStyle='rgba(200,215,235,.45)';cx.beginPath();cx.moveTo(p.x*W,p.y*H);cx.lineTo(p.x*W+5,p.y*H-16);cx.stroke();if(p.y>1.05)p.l=0}
+  if(p.k=='s'){p.y+=.0015*(.5+p.z);p.x+=Math.sin(t/900+p.p)*.0008;cx.fillStyle='rgba(255,255,255,'+(.5+.5*p.z)+')';cx.beginPath();cx.arc(p.x*W,p.y*H,1+2.5*p.z,0,7);cx.fill();if(p.y>1.02)p.l=0}
+  if(p.l<=0)P.splice(i,1)}}
+ requestAnimationFrame(fx)}requestAnimationFrame(fx);
 show(0);</script></body></html>
