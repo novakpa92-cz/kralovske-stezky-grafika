@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Královské stezky – náhled webu</title>
+<style>
+:root{--ink:#2a1c10;--parch:#ecdcb4;--parch2:#d9c08c;--gold:#c9a24a;--wood:#2b1f15;--wood2:#3a2a1b}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#120d08;color:#f0e4c8;font-family:Georgia,"Palatino Linotype","Book Antiqua",serif;overflow:hidden}
+#app{position:fixed;inset:0;display:flex;flex-direction:column}
+header{flex:none;display:flex;align-items:center;gap:14px;padding:8px 14px;background:linear-gradient(#3a2a1b,#22170e);border-bottom:2px solid #6b4e2c;box-shadow:0 4px 18px #000a;z-index:5}
+.brand{font-size:20px;letter-spacing:.08em;color:#e9c987;text-shadow:0 2px 0 #000}
+.crumbs{font-size:14px;opacity:.75}
+.crumbs a{color:#e9c987;cursor:pointer;text-decoration:none}
+.stats{margin-left:auto;display:flex;gap:14px;font-size:14px}
+.stat{display:flex;align-items:center;gap:6px;background:#0006;padding:4px 10px;border-radius:14px;border:1px solid #6b4e2c}
+.bar{width:70px;height:7px;border-radius:4px;background:#3b120e;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#9e2a1e,#d84a32)}
+main{flex:1;position:relative;overflow:hidden}
+.view{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .9s ease}
+.view.on{opacity:1;pointer-events:auto}
+/* scéna */
+.stage{position:absolute;inset:0;overflow:hidden;background:#000}
+.cam{position:absolute;inset:-3%;transition:transform .4s ease-out}
+.cam>img.bg{width:100%;height:100%;object-fit:cover;display:block;animation:kb 45s ease-in-out infinite alternate}
+@keyframes kb{to{transform:scale(1.06) translate(-1%,-.6%)}}
+.glow{position:absolute;border-radius:50%;pointer-events:none;mix-blend-mode:screen;transform:translate(-50%,-50%);aspect-ratio:1;
+ background:radial-gradient(circle,rgba(255,200,110,.85),rgba(255,140,50,.32) 38%,rgba(255,110,30,0) 70%)}
+.rays{position:absolute;pointer-events:none;mix-blend-mode:screen;transform-origin:top center;
+ background:linear-gradient(180deg,rgba(255,236,190,.42),rgba(255,236,190,0));filter:blur(6px);animation:rays 7s ease-in-out infinite alternate}
+@keyframes rays{from{opacity:.45}to{opacity:.85}}
+.fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.night{position:absolute;inset:0;pointer-events:none;background:linear-gradient(#0a1438,#160b20);mix-blend-mode:multiply;opacity:0;transition:opacity 3s}
+.eve .night{opacity:.62}.eve .glow{filter:brightness(1.4)}.eve .rays{opacity:0!important}
+.vig{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 160px 40px #000b}
+.fade{position:absolute;left:0;right:0;bottom:0;height:45%;pointer-events:none;background:linear-gradient(transparent,#000c)}
+/* mapa města */
+.spot{position:absolute;transform:translate(-50%,-50%);cursor:pointer;text-align:center}
+.spot .pin{width:34px;height:34px;margin:auto;border-radius:50%;background:radial-gradient(circle,#ffe7a8 0%,#e0a940 45%,rgba(224,169,64,0) 70%);
+ animation:pulse 2.6s ease-in-out infinite;filter:drop-shadow(0 0 6px #ffcf6a)}
+@keyframes pulse{50%{transform:scale(1.25);opacity:.75}}
+.spot .lab{margin-top:2px;font-size:13px;padding:3px 9px;border-radius:10px;background:#2a1c10dd;color:#f3e2b8;border:1px solid #c9a24a99;white-space:nowrap;
+ opacity:0;transform:translateY(-4px);transition:.25s}
+.spot:hover .lab,.touch .spot .lab{opacity:1;transform:none}
+.spot:hover .pin{animation-duration:.9s}
+/* panel s volbami */
+.panel{position:absolute;right:2.5%;bottom:4%;width:min(430px,92%);padding:18px 20px 16px;color:var(--ink);
+ background:radial-gradient(ellipse at 30% 20%,#f6ead0,#e4cf9f 60%,#cfb27a);border-radius:6px;
+ box-shadow:0 10px 40px #000c,inset 0 0 40px #a07a3c66;border:1px solid #8a6a3a;transform:translateY(20px);opacity:0;transition:.8s .3s}
+.view.on .panel{transform:none;opacity:1}
+.panel:before{content:"";position:absolute;inset:6px;border:1px solid #8a6a3a66;border-radius:4px;pointer-events:none}
+.who{display:flex;gap:14px;align-items:center;margin-bottom:10px}
+.who img{width:84px;height:84px;object-fit:cover;border-radius:50%;border:3px solid #8a6a3a;box-shadow:0 3px 10px #0007}
+.who h2{margin:0;font-size:21px;font-weight:normal;letter-spacing:.03em}
+.who small{opacity:.7;font-style:italic}
+.say{font-style:italic;margin:4px 0 12px;line-height:1.4;font-size:15px}
+.opts{display:grid;gap:7px}
+.opt{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:5px;cursor:pointer;font:inherit;font-size:15px;text-align:left;color:var(--ink);
+ background:linear-gradient(#fbf1dc,#e8d3a6);border:1px solid #9c7b45;box-shadow:0 2px 0 #7a5a2c;transition:.15s}
+.opt:hover{transform:translateX(4px);background:linear-gradient(#fff7e6,#efdcb3)}
+.opt b{font-weight:normal;flex:1}.opt span{opacity:.6;font-size:13px}
+/* boj */
+.foe{position:absolute;left:50%;bottom:6%;height:72%;transform:translateX(-50%);filter:drop-shadow(0 18px 18px #000c)}
+.foe img{height:100%;transform-origin:50% 95%;animation:breathe 3.4s ease-in-out infinite}
+@keyframes breathe{50%{transform:scaleY(1.02) scaleX(.994)}}
+.foe.hit img{animation:hit .45s}
+@keyframes hit{0%{filter:brightness(3) saturate(0)}30%{transform:translateX(-14px) rotate(-2deg)}60%{transform:translateX(10px)}100%{filter:none}}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translate(6px,-4px)}50%{transform:translate(-5px,3px)}75%{transform:translate(3px,2px)}}
+.dmg{position:absolute;font-size:34px;color:#ffdf8a;text-shadow:0 2px 6px #000,0 0 12px #f80;pointer-events:none;animation:dmg 1.1s forwards}
+@keyframes dmg{to{transform:translateY(-70px);opacity:0}}
+.hpfoe{position:absolute;left:50%;top:6%;transform:translateX(-50%);text-align:center;font-size:18px;text-shadow:0 2px 4px #000}
+.hpfoe .bar{width:220px;height:10px;margin:6px auto 0;border:1px solid #000}
+/* lišta počasí */
+.weather{position:fixed;left:12px;bottom:12px;display:flex;gap:6px;z-index:6;flex-wrap:wrap}
+.weather button{font:inherit;font-size:13px;padding:6px 10px;border-radius:16px;border:1px solid #6b4e2c;background:#22170ee6;color:#f0e4c8;cursor:pointer}
+.weather button.on{background:#d9bf8a;color:#2a1c10}
+.toast{position:fixed;left:50%;top:70px;transform:translate(-50%,-20px);background:#2a1c10ee;border:1px solid var(--gold);padding:10px 18px;border-radius:8px;opacity:0;transition:.4s;z-index:9;font-size:15px}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.title{position:absolute;left:3%;top:4%;font-size:clamp(24px,4vw,44px);letter-spacing:.06em;color:#f6e3b3;text-shadow:0 3px 12px #000,0 0 30px #000;opacity:0;transition:1s .2s;pointer-events:none}
+.view.on .title{opacity:1}
+.title small{display:block;font-size:.4em;letter-spacing:.2em;opacity:.8;text-transform:uppercase}
+@media (max-width:700px){.panel{left:3%;right:3%;width:auto;bottom:62px;padding:12px}.who img{width:56px;height:56px}.say{font-size:14px}.opt{padding:7px 10px;font-size:14px}.stats .stat:nth-child(n+2){display:none}.crumbs{display:none}}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+ <div class="brand">⚜ Královské stezky</div>
+ <div class="crumbs" id="crumbs"></div>
+ <div class="stats">
+  <div class="stat">❤ <div class="bar"><i style="width:82%"></i></div></div>
+  <div class="stat">🪙 245 grošů</div>
+  <div class="stat">⏳ podzim · ráno</div>
+ </div>
+</header>
+<main id="main"></main>
+</div>
+<div class="weather" id="weather">
+ <button data-w="eve">🌙 Večer</button><button data-w="fog">🌫 Mlha</button><button data-w="rain">🌧 Déšť</button><button data-w="snow">❄ Sníh</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const IMG='../img/';
+const P=(n)=>IMG+n+(innerWidth<800?'-m':'')+'.webp';
+
+// ---------- definice scén ----------
+// lights: [x%,y%,velikost% šířky]; emit: zdroje částic {t:typ,x,y,w,rate}
+const SCENES={
+ mapa:{title:'Kutná Hora',sub:'Královské horní město',img:'mesto-mapa',map:true,
+  emit:[{t:'smoke',x:17,y:26,rate:.05,s:.6},{t:'smoke',x:39,y:22,rate:.05,s:.6},{t:'smoke',x:72,y:48,rate:.05,s:.6},{t:'smoke',x:22,y:60,rate:.05,s:.6}],
+  clouds:true},
+ hostinec:{title:'Hostinec',sub:'U kutnohorské brány',img:'mesto-hostinec',npc:'hostinsky',name:'Hostinský',role:'hostinec u brány',
+  say:'„Vítej, poutníče! Sedni ke krbu, pivo je čerstvé a kostky leží na stole.“',
+  opts:[['🍺','Objednat pivo','2 groše'],['🎲','Zahrát si kostky','sázka'],['🛏','Pronajmout pokoj','10 grošů'],['📜','Poslechnout zvěsti','']],
+  lights:[[11,50,26,1],[57.4,9.5,5],[60.4,8.6,5],[66.5,8.3,5],[72.2,9,5],[75,10.2,5],[40.1,22.5,5],[82.4,53,7],[56,33.5,4],[26.5,28,4]],
+  emit:[{t:'sparks',x:10.5,y:52,w:4,rate:.35},{t:'smoke',x:15,y:33,rate:.06,s:1},{t:'dust',rate:.15,area:[50,15,95,85]}]},
+ kovar:{title:'Kovárna',sub:'Výheň a kovadlina',img:'mesto-kovar',npc:'kovar',name:'Kovář',role:'kovárna',
+  say:'„Ocel je jako člověk – teprve v ohni se ukáže, co v ní je. Co ti mám ukout?“',
+  opts:[['⚒','Koupit zbraň',''],['🛡','Opravit výstroj',''],['🔥','Zušlechtit předmět',''],['💰','Prodat železo','']],
+  lights:[[65,34,30,1],[43,53,10,1],[30,8,6]],
+  emit:[{t:'sparks',x:63,y:40,w:8,rate:.4},{t:'anvil',x:43,y:52,rate:.03},{t:'smoke',x:64,y:22,rate:.09,s:1.2},{t:'steam',x:75,y:58,w:8,rate:.08}]},
+ chram:{title:'Chrám sv. Barbory',sub:'Stavba pokračuje',img:'mesto-chram',npc:'farar',name:'Farář',role:'chrám sv. Barbory',
+  say:'„Pokoj s tebou, synu. Svatá Barbora bdí nad havíři i nad poutníky.“',
+  opts:[['🙏','Pomodlit se za sílu','+ síla'],['🛡','Pomodlit se za ochranu','+ obrana'],['📖','Pomodlit se za moudrost','+ zkušenosti'],['✚','Prosit o uzdravení','']],
+  lights:[[45,47,6],[49,46,5],[54,47,6],[9,53,5],[12,53,5],[14,52,4]],
+  rays:[[33,0,10,95,14],[50,4,9,90,12],[44,0,7,80,10]],
+  emit:[{t:'incense',x:47,y:42,rate:.12},{t:'dust',rate:.25,area:[25,10,70,80],warm:1}]},
+ lazebnik:{title:'Lázně',sub:'Lazebna a koupel',img:'mesto-lazebnik',npc:'lazebnik',name:'Lazebník',role:'lázně',
+  say:'„Horká lázeň, oholení a pouštění žilou – všechno za pár grošů. Co to bude?“',
+  opts:[['♨','Horká lázeň','obnoví zdraví'],['🪒','Oholit a ostříhat','změna vzhledu'],['🩹','Ošetřit zranění','']],
+  lights:[[92,12,7]],
+  emit:[{t:'steam',x:18,y:50,w:30,rate:.5},{t:'steam',x:6,y:60,w:12,rate:.15},{t:'dust',rate:.12,area:[60,10,85,50],warm:1}]},
+ trziste:{title:'Tržiště',sub:'Rušný trh pod chrámem',img:'mesto-trziste',npc:'vetesnik',name:'Vetešník',role:'tržiště',
+  say:'„Kupuju, prodávám, měním! Co nemám, to seženu – a co mám, to ti prodám levně.“',
+  opts:[['🧺','Prohlédnout zboží',''],['💰','Prodat kořist',''],['🔎','Ptát se po zvěstech','']],
+  emit:[{t:'birds',rate:.006},{t:'dust',rate:.2,area:[0,30,100,95],warm:1},{t:'smoke',x:29,y:12,rate:.03,s:.8}]},
+ brana:{title:'Městská brána',sub:'Cesta do světa',img:'mesto-brana',npc:'strazny-brana',name:'Strážný',role:'městská brána',
+  say:'„Za branou to není bezpečné. Lapkové, vlci… Kam máš namířeno?“',
+  opts:[['🗺','Vydat se na výpravu','Suchdolské lesy','go:vyprava'],['🏰','Vrátit se do města','','go:mapa']],
+  lights:[[93,40,7,1]],
+  emit:[{t:'sparks',x:93,y:41,w:1.5,rate:.12},{t:'mist',area:[30,45,85,62],rate:.05},{t:'birds',rate:.004}]},
+ vyprava:{title:'Suchdolské lesy',sub:'Lesní stezka',img:'vypravy/rataje-02',
+  say:'Stezka se noří do lesa. Mezi stromy se válí mlha a odněkud zazní vytí…',
+  opts:[['⚔','Jít po stopách','střetnutí','go:boj'],['🏹','Obejít lesem',''],['🏰','Vrátit se k bráně','','go:brana']],
+  emit:[{t:'mist',area:[0,55,100,85],rate:.08},{t:'leaves',rate:.05},{t:'dust',rate:.15,area:[30,0,70,70],warm:1}],
+  rays:[[45,0,14,90,8]]},
+ boj:{title:'Vlk!',sub:'Z houští vyrazil hladový vlk',img:'vypravy/rataje-02',foe:'bytosti/nepritel-vlk',dark:1,
+  opts:[['⚔','Útok mečem','','atk'],['🛡','Bránit se','','def'],['🏃','Utéct','','go:vyprava']],
+  emit:[{t:'mist',area:[0,60,100,90],rate:.1},{t:'leaves',rate:.03}]}
+};
+
+// ---------- vykreslení ----------
+const main=document.getElementById('main');let cur=null,views={};
+function build(id){
+ const S=SCENES[id],v=document.createElement('div');v.className='view';
+ let h='<div class="stage"><div class="cam"><img class="bg" src="'+P(IMG.length?S.img:'')+'" alt="">';
+ (S.lights||[]).forEach(l=>h+='<div class="glow" data-f="'+(l[3]||0)+'" style="left:'+l[0]+'%;top:'+l[1]+'%;width:'+l[2]+'%"></div>');
+ (S.rays||[]).forEach(r=>h+='<div class="rays" style="left:'+r[0]+'%;top:'+r[1]+'%;width:'+r[2]+'%;height:'+r[3]+'%;transform:rotate(-'+r[4]+'deg)"></div>');
+ h+='<div class="night"></div><canvas class="fx"></canvas></div><div class="vig"></div>';
+ if(S.dark) h+='<div class="fade" style="height:100%;background:radial-gradient(ellipse at 50% 70%,transparent 20%,#000a 80%)"></div>';
+ if(S.map){h+='<div class="spots">';
+  [['hostinec',21.5,45.9,'Hostinec'],['kovar',20.2,63.5,'Kovárna'],['trziste',41.7,57.1,'Tržiště'],['chram',84.6,32.2,'Chrám'],['lazebnik',74.9,57.6,'Lázně'],['brana',15,81.1,'Brána']]
+  .forEach(s=>h+='<div class="spot" style="left:'+s[1]+'%;top:'+s[2]+'%" data-go="'+s[0]+'"><div class="pin"></div><div class="lab">'+s[3]+'</div></div>');
+  h+='</div>';}
+ h+='</div>';
+ if(S.foe) h+='<div class="foe"><img src="'+P(S.foe)+'" alt=""></div><div class="hpfoe">Hladový vlk<div class="bar"><i style="width:100%"></i></div></div>';
+ h+='<div class="title">'+S.title+'<small>'+S.sub+'</small></div>';
+ if(S.opts){h+='<div class="panel">';
+  if(S.npc) h+='<div class="who"><img src="'+P('bytosti/npc-'+S.npc)+'" alt=""><div><h2>'+S.name+'</h2><small>'+S.role+'</small></div></div>';
+  if(S.say) h+='<div class="say">'+S.say+'</div>';
+  h+='<div class="opts">'+S.opts.map(o=>'<button class="opt" data-a="'+(o[3]||'')+'">'+o[0]+' <b>'+o[1]+'</b><span>'+o[2]+'</span></button>').join('')+'</div></div>';}
+ v.innerHTML=h;main.appendChild(v);
+ const fx={S,v,cv:v.querySelector('canvas.fx'),glows:[...v.querySelectorAll('.glow')].map(g=>({g,f:g.dataset.f=='1',ph:Math.random()*9})),P:[]};
+ fx.cx=fx.cv.getContext('2d');
+ v.querySelectorAll('.spot').forEach(s=>s.onclick=()=>go(s.dataset.go));
+ v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>act(b.dataset.a,b.querySelector('b').textContent));
+ const cam=v.querySelector('.cam');
+ v.addEventListener('mousemove',e=>{const dx=e.clientX/innerWidth-.5,dy=e.clientY/innerHeight-.5;cam.style.transform='translate('+(-dx*2)+'%,'+(-dy*1.6)+'%)'});
+ views[id]=fx;return fx;
+}
+function go(id){
+ const f=views[id]||build(id);
+ if(cur) views[cur].v.classList.remove('on');
+ cur=id;requestAnimationFrame(()=>f.v.classList.add('on'));f.sized=0;
+ const c=document.getElementById('crumbs');
+ c.innerHTML=id=='mapa'?'Kutná Hora':(['vyprava','boj'].includes(id)?'<a onclick="go(\'brana\')">Brána</a> › '+SCENES[id].title:'<a onclick="go(\'mapa\')">Kutná Hora</a> › '+SCENES[id].title);
+ location.hash=id;
+}
+let foeHp=100;
+function act(a,label){
+ if(a.startsWith('go:')) return go(a.slice(3));
+ if(a=='atk'){const f=views.boj,foe=f.v.querySelector('.foe');foe.classList.remove('hit');void foe.offsetWidth;foe.classList.add('hit');
+  f.v.querySelector('.stage').classList.remove('shake');void f.v.offsetWidth;f.v.querySelector('.stage').classList.add('shake');
+  const d=7+Math.floor(Math.random()*9);foeHp=Math.max(0,foeHp-d);f.v.querySelector('.hpfoe i').style.width=foeHp+'%';
+  const n=document.createElement('div');n.className='dmg';n.textContent='−'+d;n.style.left=(45+Math.random()*10)+'%';n.style.top='38%';f.v.appendChild(n);setTimeout(()=>n.remove(),1200);
+  for(let i=0;i<30;i++)f.P.push({k:'spark',x:.5+(Math.random()-.5)*.08,y:.5,vx:(Math.random()-.5)*.012,vy:-Math.random()*.012,l:1});
+  if(foeHp<=0){toast('Vlk padl! Získáváš kožešinu.');setTimeout(()=>{foeHp=100;f.v.querySelector('.hpfoe i').style.width='100%';go('vyprava')},1800)}
+  return}
+ toast(label+' – v náhledu zatím jen ukázka');
+}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200)}
+
+// ---------- počasí ----------
+const W={eve:0,fog:0,rain:0,snow:0};
+document.getElementById('weather').onclick=e=>{const w=e.target.dataset.w;if(!w)return;W[w]^=1;e.target.classList.toggle('on',!!W[w]);
+ if(w=='rain'&&W.rain&&W.snow){W.snow=0;document.querySelector('[data-w=snow]').classList.remove('on')}
+ if(w=='snow'&&W.snow&&W.rain){W.rain=0;document.querySelector('[data-w=rain]').classList.remove('on')}
+ Object.values(views).forEach(f=>f.v.classList.toggle('eve',!!W.eve))};
+
+// ---------- částice ----------
+const R=Math.random;
+function spawn(f,e){
+ const a=e.area||[0,0,100,100];
+ switch(e.t){
+ case 'sparks':f.P.push({k:'spark',x:(e.x+(R()-.5)*e.w)/100,y:e.y/100,vx:(R()-.5)*.0012,vy:-(.002+R()*.003),l:1});break;
+ case 'anvil':for(let i=0;i<14;i++)f.P.push({k:'spark',x:e.x/100,y:e.y/100,vx:(R()-.5)*.01,vy:-R()*.008,g:.0004,l:1});break;
+ case 'smoke':f.P.push({k:'smoke',x:e.x/100+(R()-.5)*.02,y:e.y/100,r:.012*(e.s||1),vx:.0002+R()*.0002,vy:-.0005,a:.22,c:'190,180,170'});break;
+ case 'incense':f.P.push({k:'smoke',x:e.x/100+(R()-.5)*.01,y:e.y/100,r:.006,vx:Math.sin(Date.now()/900)*.0003,vy:-.0007,a:.18,c:'235,225,210',grow:.00018});break;
+ case 'steam':f.P.push({k:'smoke',x:(e.x+(R()-.5)*e.w)/100,y:e.y/100,r:.02,vx:(R()-.5)*.0003,vy:-.0006-R()*.0004,a:.2,c:'240,240,236',grow:.0005});break;
+ case 'dust':f.P.push({k:'dust',x:(a[0]+R()*(a[2]-a[0]))/100,y:(a[1]+R()*(a[3]-a[1]))/100,vx:(R()-.5)*.0002,vy:(R()-.5)*.00015,l:1,warm:e.warm});break;
+ case 'mist':f.P.push({k:'smoke',x:(a[0]+R()*(a[2]-a[0]))/100,y:(a[1]+R()*(a[3]-a[1]))/100,r:.08+R()*.06,vx:.0002+R()*.0002,vy:0,a:.16,c:'215,222,228',grow:.0001,dec:.0004});break;
+ case 'leaves':f.P.push({k:'leaf',x:R()*1.1-.05,y:-.03,vx:.0006+R()*.0006,vy:.0012+R()*.001,rot:R()*6,vr:(R()-.5)*.08,p:R()*6,c:['#b5651d','#c9a227','#8b3a1a','#a0522d'][R()*4|0],l:1});break;
+ case 'birds':f.P.push({k:'bird',x:-.05,y:.08+R()*.25,vx:.0018+R()*.001,p:R()*6,n:3+(R()*4|0),l:1});break;
+ }
+}
+function frame(t){
+ const f=views[cur];
+ if(f){
+  const cv=f.cv,cx=f.cx;
+  if(!f.sized){const r=cv.getBoundingClientRect();cv.width=r.width;cv.height=r.height;f.sized=1}
+  const w=cv.width,h=cv.height;cx.clearRect(0,0,w,h);
+  (f.S.emit||[]).forEach(e=>{if(R()<e.rate)spawn(f,e)});
+  if(W.rain)for(let i=0;i<7;i++)f.P.push({k:'rain',x:R()*1.2-.1,y:-.05,l:1});
+  if(W.snow&&R()<.7)f.P.push({k:'snow',x:R(),y:-.02,z:R(),p:R()*6,l:1});
+  if(W.fog&&R()<.12)f.P.push({k:'smoke',x:-.1,y:.2+R()*.75,r:.12+R()*.1,vx:.0006+R()*.0005,vy:0,a:.2,c:'210,216,222',grow:.0001,dec:.00025});
+  if(f.S.clouds&&R()<.004)f.P.push({k:'cloud',x:-.3,y:R()*.8,r:.25+R()*.2,vx:.0003,l:1});
+  for(let i=f.P.length-1;i>=0;i--){const p=f.P[i];
+   switch(p.k){
+   case 'spark':p.x+=p.vx;p.y+=p.vy;p.vy+=p.g||0;p.vx+=Math.sin(t/200+i)*.00005;p.l-=.014;
+    cx.fillStyle='rgba(255,'+(150+90*p.l|0)+',60,'+p.l+')';cx.beginPath();cx.arc(p.x*w,p.y*h,1+1.4*p.l,0,7);cx.fill();break;
+   case 'smoke':p.x+=p.vx;p.y+=p.vy;p.r+=p.grow||.00025;p.a-=p.dec||.0009;if(p.a<=0){p.l=0;break}
+    {const g=cx.createRadialGradient(p.x*w,p.y*h,0,p.x*w,p.y*h,p.r*w);g.addColorStop(0,'rgba('+p.c+','+p.a+')');g.addColorStop(1,'rgba('+p.c+',0)');cx.fillStyle=g;cx.beginPath();cx.arc(p.x*w,p.y*h,p.r*w,0,7);cx.fill()}break;
+   case 'dust':p.x+=p.vx;p.y+=p.vy;p.l-=.003;{const a=Math.sin(p.l*3.14)*.5;cx.fillStyle=p.warm?'rgba(255,230,180,'+a+')':'rgba(255,255,255,'+a+')';cx.beginPath();cx.arc(p.x*w,p.y*h,1.2,0,7);cx.fill()}break;
+   case 'leaf':p.x+=p.vx+Math.sin(t/700+p.p)*.0008;p.y+=p.vy;p.rot+=p.vr;if(p.y>1.05)p.l=0;
+    cx.save();cx.translate(p.x*w,p.y*h);cx.rotate(p.rot);cx.scale(1,Math.abs(Math.sin(t/300+p.p))+.2);cx.fillStyle=p.c;cx.beginPath();cx.ellipse(0,0,6,3,0,0,7);cx.fill();cx.restore();break;
+   case 'bird':p.x+=p.vx;p.p+=.25;if(p.x>1.1)p.l=0;cx.strokeStyle='rgba(30,25,20,.7)';cx.lineWidth=1.4;
+    for(let b=0;b<p.n;b++){const bx=(p.x-b*.025)*w,by=(p.y+(b%2)*.02+Math.sin(p.p+b)*.004)*h,wy=Math.sin(p.p*1.3+b)*4;cx.beginPath();cx.moveTo(bx-6,by-wy);cx.quadraticCurveTo(bx-3,by-2,bx,by);cx.quadraticCurveTo(bx+3,by-2,bx+6,by-wy);cx.stroke()}break;
+   case 'rain':p.x-=.003;p.y+=.03;if(p.y>1.05)p.l=0;cx.strokeStyle='rgba(200,212,230,.4)';cx.lineWidth=1;cx.beginPath();cx.moveTo(p.x*w,p.y*h);cx.lineTo(p.x*w+4,p.y*h-14);cx.stroke();break;
+   case 'snow':p.y+=.0011*(.4+p.z);p.x+=Math.sin(t/900+p.p)*.0006;if(p.y>1.02)p.l=0;
+    {const r=.6+1.3*p.z*p.z,a=.25+.4*p.z,g=cx.createRadialGradient(p.x*w,p.y*h,0,p.x*w,p.y*h,r*1.8);g.addColorStop(0,'rgba(236,240,248,'+a+')');g.addColorStop(1,'rgba(236,240,248,0)');cx.fillStyle=g;cx.beginPath();cx.arc(p.x*w,p.y*h,r*1.8,0,7);cx.fill()}break;
+   case 'cloud':p.x+=p.vx;if(p.x>1.3)p.l=0;{const g=cx.createRadialGradient(p.x*w,p.y*h,0,p.x*w,p.y*h,p.r*w);g.addColorStop(0,'rgba(40,30,20,.13)');g.addColorStop(1,'rgba(40,30,20,0)');cx.fillStyle=g;cx.beginPath();cx.arc(p.x*w,p.y*h,p.r*w,0,7);cx.fill()}break;
+   }
+   if(p.l<=0||p.y<-.2)f.P.splice(i,1);
+  }
+  if(W.rain){cx.fillStyle='rgba(30,40,55,.18)';cx.fillRect(0,0,w,h)}
+  f.glows.forEach(o=>{const k=o.f?.75+.15*Math.sin(t/90+o.ph)+.1*Math.sin(t/37+o.ph*2)+(R()-.5)*.1:.65+.12*Math.sin(t/150+o.ph)+(R()-.5)*.14;
+   o.g.style.opacity=W.rain&&!o.f?k*.7:k;o.g.style.transform='translate(-50%,-50%) scale('+(.94+k*.1)+')'});
+ }
+ requestAnimationFrame(frame);
+}
+addEventListener('resize',()=>Object.values(views).forEach(f=>f.sized=0));
+if('ontouchstart' in window)document.body.classList.add('touch');
+go(SCENES[location.hash.slice(1)]?location.hash.slice(1):'mapa');requestAnimationFrame(frame);
+</script>
+</body>
+</html>
