@@ -41,7 +41,8 @@ D.forEach((s,i)=>{const b=document.createElement('button');b.textContent=s.t+' (
 function show(i){cur=i;[...nav.children].forEach((b,j)=>b.classList.toggle('on',j==i));const s=D[i];
 g.className='grid'+((s.d.includes('bytosti')||s.d.includes('postava'))?' tall':'');g.innerHTML='';
 s.f.forEach((f,k)=>{const m=f.replace('.webp','-m.webp');const fig=document.createElement('figure');
-fig.innerHTML='<img loading="lazy" src="'+s.d+'/'+m+'" alt=""><figcaption>'+f.replace('.webp','')+'</figcaption>';fig.onclick=()=>open(k);g.appendChild(fig)});scrollTo(0,0)}
+const lay=s.d.includes('postava')&&!f.startsWith('postava-telo');const body=s.d+'/postava-telo-'+(f.includes('zena')?'zena':'muz')+'-m.webp';
+fig.innerHTML=(lay?'<div style="position:relative"><img loading="lazy" src="'+body+'" alt=""><img loading="lazy" src="'+s.d+'/'+m+'" alt="" style="position:absolute;inset:0;background:none"></div>':'<img loading="lazy" src="'+s.d+'/'+m+'" alt="">')+'<figcaption>'+f.replace('.webp','')+(lay?' (na těle)':'')+'</figcaption>';fig.onclick=()=>open(k);g.appendChild(fig)});scrollTo(0,0)}
 function open(k){idx=k;W=0;P=[];const bt=D[cur].d.includes('bytosti')||D[cur].d.includes('postava');lb.classList.toggle('being',bt);lb.classList.toggle('scene',!bt);const s=D[cur];document.getElementById('lbi').src=s.d+'/'+s.f[k];document.getElementById('lbc').textContent=s.f[k].replace('.webp','');lb.classList.add('on')}
 lb.onclick=e=>{if(e.target==lb||e.target.closest('.box'))lb.classList.remove('on')};
 lb.querySelector('.p').onclick=()=>open((idx-1+D[cur].f.length)%D[cur].f.length);
