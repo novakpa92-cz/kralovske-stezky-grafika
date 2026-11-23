@@ -138,6 +138,8 @@ if ruk == "kratke":                                    # podpaží: pás u boku 
         pas = np.zeros(W, bool); pas[max(0, l_ - 26):l_] = True; pas[r_ + 1:r_ + 27] = True
         for a_, b_ in useky(body[y]):
             if not (a_ <= 512 <= b_): pas[max(0, a_ - 6):b_ + 7] = False
+        _kz = (t[y, :, 3] > .3) & ((t[y, :, 0] - t[y, :, 1]) / np.maximum(t[y, :, 0], 1e-3) >= .19)   # kůže paže → rukáv oděvu tam zůstává
+        pas &= ~(cv2.dilate(_kz.astype(np.uint8)[None, :], np.ones((1, 13), np.uint8))[0] > 0)
         R[y] |= pas
 # průkrčník: v otvoru zbroje u krku se límec oděvu smí ukázat
 for y in range(top - 30, top + 90):
@@ -247,7 +249,15 @@ if ruk == "kratke":                                    # spodní prádlo: kde je
         sg = [u for u in useky(A[y]) if abs((u[0] + u[1]) / 2 - 512) < 200]
         if sg: _mimo[y, :max(0, min(u[0] for u in sg) - 12)] = True; _mimo[y, max(u[1] for u in sg) + 13:] = True
         else: _mimo[y] = True
-    RB &= ~((t[..., 3] > .3) & (_rg >= .19) & ~A & (ys > SB[None, :] + 2) & (ys < 1000) & _mimo)   # kůže paží pod rukávem zůstává celá
+    RB &= ~((t[..., 3] > .3) & (_rg >= .19) & ~A & (ys > SB[None, :] + 2) & (ys < 1000))   # kůže paží pod rukávem zůstává celá
+    _st = (t[..., 3] > .3) & (_rg < .19) & (ys > 400) & (ys < 620) & (np.abs(xs - 512) > 110)   # rukávek košilky: jeho spodek ve sloupci
+    _chB = np.where(_st.any(0), H - 1 - np.argmax(_st[::-1], axis=0), -1)
+    RB |= (ys <= _chB[None, :] + 4) & (ys > 400) & (_rg < .27) & (t[..., 3] > .05) & ~A & (np.abs(xs - 512) > 110)
+    _lo = ((t[..., 3] > .05) & (_rg < .215)).astype(np.uint8)          # košilka i ve stínu: souvislá s hlavní plochou košilky
+    _c, _lab, _st2, _ = cv2.connectedComponentsWithStats(cv2.morphologyEx(_lo, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8)))
+    _big = np.isin(_lab, [i for i in range(1, _c) if _st2[i, cv2.CC_STAT_AREA] > 3000])
+    _big = (cv2.dilate(_big.astype(np.uint8), np.ones((7, 7), np.uint8)) > 0) & (_rg < .27) & (t[..., 3] > .05)
+    RB |= _big & ~A & (ys > 400) & (ys < 640) & (np.abs(xs - 512) > 100)
     _vb = ((t[..., 3] > .3) & ~RB & ~cv2.dilate(A.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool) & (ys < 760)).astype(np.uint8)
     _c, _lab, _st, _ = cv2.connectedComponentsWithStats(_vb)   # útržky prádla kolem podpaží (ne paže) pryč
     for _i in range(1, _c):

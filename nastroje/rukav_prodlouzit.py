@@ -10,7 +10,7 @@ Y0, Y1, Y2, DX, XT, XV = map(float, sys.argv[3:9])
 k = np.array(Image.open(D / f"{n}.webp").convert("RGBA")).astype(np.float32); H, W = k.shape[:2]
 ys, xs = np.mgrid[:H, :W].astype(np.float32)
 odst = (XT - xs) if st == "L" else (xs - XT)
-w = np.clip(odst / 25.0, 0, 1) * (ys > Y0) * (ys < Y2 + 60) * (np.abs(xs - XV) < abs(XT - XV) + 80)
+w = np.clip(odst / 25.0, 0, 1) * np.clip((ys - Y0 + 30) / 60.0, 0, 1) * (ys < Y2 + 60) * (np.abs(xs - XV) < abs(XT - XV) + 80)
 s = (Y2 - Y0) / (Y1 - Y0)
 sy = Y0 + (ys - Y0) / s                                             # zdroj y (protažení)
 t = np.clip((ys - Y0) / (Y2 - Y0), 0, 1.2)
