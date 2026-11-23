@@ -162,14 +162,25 @@ if SUKNE and OD:                                     # sukně vedle zbroje nad l
     _ok = np.zeros((H, W), bool)                      # kde smí být sukně vidět
     _tc = [x for x in range(512 - 270, 512 + 270) if colbot[x] > _hl - 60]   # sloupce trupu zbroje (k lemu)
     _xl, _xr = min(_tc), max(_tc)
-    _st0 = colbot.copy().astype(float)                   # pod zbrojí hned pod lemem; vedle ní sukně vylézá šikmo z rohu lemu (kužel), žádná polička
-    _bl = int(colbot[_xl:_xl + 25].max()); _br = int(colbot[_xr - 24:_xr + 1].max())
-    _st0[:_xl] = _bl + (_xl - np.arange(_xl)) / 0.9
-    _st0[_xr + 1:] = _br + (np.arange(_xr + 1, W) - _xr) / 0.9
+    _st0 = colbot.copy()                                  # pod zbrojí hned pod lemem
     for _x in range(_xl, _xr + 1):
         if colbot[_x] < _hl - 60: _st0[_x] = colbot[_x]
-    _st0 = _st0.astype(int)
-    _ok = (ys > _st0[None, :]) | ((ys >= 600) & ~A & (xs >= _xl) & (xs <= _xr) & (ys > 700) & (np.abs(xs - 512) < 60))   # pod lemem; rozparek
+    _ok = ((ys > _st0[None, :]) & (xs >= _xl) & (xs <= _xr)) | ((ys >= 600) & ~A & (xs >= _xl) & (xs <= _xr) & (ys > 700) & (np.abs(xs - 512) < 60))   # pod lemem; rozparek
+    # vedle zbroje: sukně se z rohu lemu plynule rozšiřuje k vlastní šířce dole (zúžená, bez schodů)
+    _bl = int(colbot[_xl:_xl + 25].max()); _br = int(colbot[_xr - 24:_xr + 1].max())
+    _rows = np.where(_o[:, 512 - 300:512 + 300].any(1))[0]; _yb = int(_rows.max()) - 25
+    def _okraj(_y, lev):
+        _r = np.where(_o[_y])[0]
+        return (_r.min() if lev else _r.max()) if len(_r) else None
+    _sLb = _okraj(_yb, True); _sRb = _okraj(_yb, False)
+    for _y in range(min(_bl, _br), H):
+        if _y > _yb: _ok[_y] = True; continue
+        for lev, _b, _x0, _xe in ((True, _bl, _xl, _sLb), (False, _br, _xr, _sRb)):
+            if _y <= _b or _xe is None: continue
+            _t = min(1.0, (_y - _b) / 140); _w = 45 * (1 - (1 - _t) ** 2) + max(0, _y - _b - 140) * 0.1   # jako lněná sukně: rovná, jen mírně širší než zbroj
+            _tx = _x0 - _w if lev else _x0 + _w
+            if lev: _ok[_y, int(round(_tx)):_xl] = True
+            else: _ok[_y, _xr + 1:int(round(_tx)) + 1] = True
     _v = (_ok & _o).astype(np.uint8)
     _op = cv2.morphologyEx(_v, cv2.MORPH_OPEN, np.ones((1, 9), np.uint8)) > 0
     _ok &= _op | ~_o
