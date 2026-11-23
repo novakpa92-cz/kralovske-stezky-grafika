@@ -17,6 +17,24 @@ pradlo = cv2.dilate(pradlo, np.ones((5, 5), np.uint8)) > 0                      
 pradlo &= ~((sat > .43) & (im[..., 3] > .4))                                     # ale ne do jasné kůže
 U = np.array(Image.open(D / f"{n}.webp").convert("RGBA"))[..., 3] > 200
 skryt = pradlo & ~U
+# boty: chodidlo, které vyčuhuje z boty oděvu, zmizí (od horního okraje boty dolů)
+telo = im[..., 3] > .02
+for side in (-1, 1):
+    cand = (U & ((xs - 512) * side > 20) & (ys > 1330)).astype(np.uint8)
+    c, lab, st, _ = cv2.connectedComponentsWithStats(cand)
+    if c < 2: continue
+    i = max(range(1, c), key=lambda j: st[j, cv2.CC_STAT_TOP] + st[j, cv2.CC_STAT_HEIGHT])   # nejnižší kus = bota (ne lem sukně)
+    bota = lab == i
+    if st[i, cv2.CC_STAT_TOP] < 1340:              # bota splývá se sukní: pod sukní není vidět noha, jen bota
+        skryt |= telo & ~U & ((xs - 512) * side > 20) & (ys >= 1330)
+        continue
+    if bota.sum() < 500: continue
+    top = np.where(bota.any(1))[0].min()
+    for y in range(top + 12, 1536):                 # jen co je mimo botu do stran nebo pod ní (otvor boty zůstane)
+        row = np.where(bota[y])[0]
+        strana = ((np.arange(1024) - 512) * side > 20) & telo[y] & ~U[y]
+        if len(row): strana &= (np.arange(1024) < row.min()) | (np.arange(1024) > row.max())
+        skryt[y] |= strana
 a = (skryt * 255).astype(np.uint8)
 Image.fromarray(np.dstack([np.full_like(a, 255)] * 3 + [a]), "RGBA").save(D / f"{n}-skryva-telo.webp", "WEBP", lossless=True)
 j = json.load(open(D / "skryva.json")); j["telo"] = sorted(set(j["telo"]) | {n}); json.dump(j, open(D / "skryva.json", "w"), ensure_ascii=False)
