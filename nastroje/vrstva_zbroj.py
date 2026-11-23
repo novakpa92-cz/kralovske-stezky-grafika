@@ -154,6 +154,33 @@ if SUKNE_X is not None:                              # kožešina kabátku vedle
         _sg = [u for u in useky(A[_y]) if abs((u[0] + u[1]) / 2 - 512) < 200]
         if _sg: _hull[_y, max(0, min(u[0] for u in _sg) - 60):min(u[0] for u in _sg)] = True; _hull[_y, max(u[1] for u in _sg) + 1:max(u[1] for u in _sg) + 61] = True
     R |= _f & _hull & ~ruce
+if SUKNE and OD:                                     # sukně vedle zbroje: vyleze zpod zbroje v kuželu (šikmo ven dolů), ne vodorovně useknutá
+    _o = np.array(Image.open(D / f"odev-{OD}.webp").convert("RGBA"))[..., 3] > 100
+    _zona = np.abs(xs - 512) < 270
+    _cb = colbot[512 - 270:512 + 270]; _hm = int(_cb[_cb > 0].max())
+    _hl = int(np.median(colbot[400:624][colbot[400:624] > 0])); _y0 = _hl - 300; _k = 2.5
+    _ok = np.zeros((H, W), bool)                      # kde smí být sukně vidět
+    _L = _Rr = None
+    for _y in range(600, H):
+        _sg = [u for u in useky(A[_y]) if abs((u[0] + u[1]) / 2 - 512) < 200]
+        if _sg: _L = min(u[0] for u in _sg); _Rr = max(u[1] for u in _sg)
+        if _L is None: _ok[_y] = True; continue
+        _d = max(0.0, (_y - _y0) * _k)
+        _ok[_y, max(0, int(_L - _d)):_L] = True; _ok[_y, _Rr + 1:int(_Rr + _d) + 1] = True
+        _ok[_y, _L:_Rr + 1] = ~A[_y, _L:_Rr + 1]       # štěrbina / pod lemem uvnitř
+    _v = (_ok & _o).astype(np.uint8)
+    _op = cv2.morphologyEx(_v, cv2.MORPH_OPEN, np.ones((1, 9), np.uint8)) > 0
+    _ok &= _op | ~_o
+    _vz = (_ok & _o & _zona & (ys >= 600) & ~A & ~ruce).astype(np.uint8)   # jen kusy spojené se sukní pod lemem (ne útržky pod paží)
+    _c, _lab, _st, _ = cv2.connectedComponentsWithStats(_vz)
+    for _i in range(1, _c):
+        if _st[_i, cv2.CC_STAT_TOP] + _st[_i, cv2.CC_STAT_HEIGHT] < _hm - 20: _ok[_lab == _i] = False
+    _z = _zona & (ys >= 600) & ~A & ~ruce
+    R = np.where(_z, ~_ok, R); RB = np.where(_z, ~_ok & ~A, RB)
+    _vz = (_o & ~R & ~cv2.dilate(A.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool)).astype(np.uint8)   # drobné útržky oděvu kolem zbroje pryč
+    _c, _lab, _st, _ = cv2.connectedComponentsWithStats(_vz)
+    for _i in range(1, _c):
+        if _st[_i, cv2.CC_STAT_AREA] < 400: R[_lab == _i] = True
 jm = f"{n}__{OD}" if OD else n
 uloz(R, D / f"{jm}-skryva.webp"); uloz(RB, D / f"{jm}-skryva-telo.webp")
 j = json.load(open(D / "skryva.json"))

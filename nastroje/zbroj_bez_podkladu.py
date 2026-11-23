@@ -6,10 +6,11 @@ from PIL import Image
 from pathlib import Path
 D = Path("img/postava"); n = sys.argv[1]; T = float(sys.argv[2])
 y0 = int(sys.argv[3]) if len(sys.argv) > 3 else 0; y1 = int(sys.argv[4]) if len(sys.argv) > 4 else 1536
+SMIN = float(sys.argv[5]) if len(sys.argv) > 5 else 0       # u kovu (šedý) jen barevné zbytky: sytost nad SMIN
 k = np.array(Image.open(D / f"{n}.webp").convert("RGBA")); rgb = k[..., :3].astype(float)
 lum = rgb.mean(2); s = (rgb.max(2) - rgb.min(2)) / np.maximum(rgb.max(2), 1)
 ys = np.arange(1536)[:, None]
-m = ((k[..., 3] > 0) & (lum > T) & (s < .45) & (ys >= y0) & (ys < y1)).astype(np.uint8)
+m = ((k[..., 3] > 0) & (lum > T) & (s < .45) & (s > SMIN) & (ys >= y0) & (ys < y1)).astype(np.uint8)
 m = cv2.morphologyEx(m, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
 m = cv2.dilate(m, np.ones((3, 3), np.uint8)) > 0
 k[..., 3] = np.where(m, 0, k[..., 3])
