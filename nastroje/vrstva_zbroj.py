@@ -96,6 +96,11 @@ for x in range(W):
     c = np.where(A[:, x])[0]
     if len(c) and c[0] < top + 140:
         c = c[:np.argmax(np.r_[np.diff(c) > 3, True]) + 1]; SB[x] = c.max()
+for _sd in (np.arange(W) < 512, np.arange(W) >= 512):   # rukáv srostlý s bokem: sloupce u trupu nesmí brát spodek trupu
+    _o = _sd & (np.abs(np.arange(W) - 512) > 150) & (SB >= 0)
+    if _o.any():
+        _cap = int(np.percentile(SB[_o], 90)) + 12
+        SB[_sd & (SB > _cap)] = _cap
 _v = np.where(SB >= 0)[0]
 if len(_v):                                          # vně rukávu (oděv trčí do strany): spodní hrana rukávu protažená ve stejném sklonu
     for _e, _d in ((_v.min(), -1), (_v.max(), 1)):
@@ -165,7 +170,7 @@ if ruk == "zadne":
     pass                     # vesta: R míří jen k trupu, paže nezasahuje              # paže v rukávu zbroje: pryč celá (i kůže), ruka pod rukávem zůstane
 if ruk != "zadne":                                   # těsně kolem rukávů zbroje nic zespodu
     okoli = cv2.dilate(A.astype(np.uint8), np.ones((51, 51), np.uint8)) > 0
-    R |= okoli & ~A & (np.abs(xs - 512) > 150) & (ys >= top) & (ys <= (SB if ruk == "kratke" else colbot)[None, :].clip(0) + 10) & ~((ys >= hem[None, :] - 4) & (np.abs(xs - 512) < 260) & (ys > 700))
+    R |= okoli & ~A & (np.abs(xs - 512) > 150) & (ys >= top) & (ys <= (SB + 2 if ruk == "kratke" else colbot + 10)[None, :].clip(0)) & ~((ys >= hem[None, :] - 4) & (np.abs(xs - 512) < 260) & (ys > 700))
 def cist(m):                                         # bez jednořádkových proužků a drobků
     m = cv2.morphologyEx(m.astype(np.uint8), cv2.MORPH_OPEN, np.ones((4, 1), np.uint8))
     c, lab, st, _ = cv2.connectedComponentsWithStats(m)
@@ -252,6 +257,25 @@ for y in range(650, int(hem.max()) + 1):              # rozparek zbroje: uvnitř
     if len(sg) < 2: continue
     sg.sort(); a_ = sg[0][1] + 1; b_ = sg[-1][0]
     if b_ - a_ < 120: R[y, a_:b_] = False; RB[y, a_:b_] = False
+if ruk == "kratke" and OD:                             # rukáv oděvu pod krátkým rukávem zbroje: vychází z rohu rukávu a plynule se rozšíří (žádná vodorovná polička do strany)
+    _ov = np.array(Image.open(D / f"odev-{OD}.webp").convert("RGBA"))[..., 3] > 100
+    for _sd in (-1, 1):
+        _cols = np.where(A[top:top + 260].any(0))[0]
+        _xo = _cols.min() if _sd < 0 else _cols.max()          # vnější hrana rukávu zbroje
+        _y0 = int(np.where(A[:, _xo])[0].max())
+        _rows = np.arange(_y0, _y0 + 220)
+        _edge = []
+        for _y in _rows:
+            _b = np.where(body[_y])[0]
+            if len(_b): _edge.append((_y, _b.min() if _sd < 0 else _b.max()))
+        if len(_edge) < 20: continue
+        _f = np.polyfit([a for a, b in _edge], [b for a, b in _edge], 1)
+        _off = _xo - np.polyval(_f, _y0)                     # o kolik je roh rukávu vně paže
+        for _y in range(_y0 + 1, _y0 + 220):
+            _t = min(1.0, (_y - _y0) / 120.0); _w = 22 * (1 - (1 - _t) ** 2)
+            _lim = np.polyval(_f, _y) + _off + (-_w if _sd < 0 else _w)
+            if _sd < 0: R[_y, :max(0, int(_lim))] |= _ov[_y, :max(0, int(_lim))]
+            else: R[_y, int(_lim) + 1:] |= _ov[_y, int(_lim) + 1:]
 jm = f"{n}__{OD}" if OD else n
 uloz(R, D / f"{jm}-skryva.webp"); uloz(RB, D / f"{jm}-skryva-telo.webp")
 j = json.load(open(D / "skryva.json"))
