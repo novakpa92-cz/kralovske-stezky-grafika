@@ -366,6 +366,26 @@ if ruk == "kratke":                                    # oděv vyčuhující nad
         if not len(ax): continue
         m_ = ((xs[0] < ax.min()) | (xs[0] > ax.max())) & (np.abs(xs[0] - 512) > 70)
         R[y] |= m_
+if ruk == "kratke" and OD and SB.max() >= PY + 40:      # rukáv oděvu pod dlouhým rukávem zbroje: jen trubka podél paže (osa i šířka podle paže), stejně na obou stranách
+    from scipy.ndimage import gaussian_filter1d as _gf
+    for _sd in (-1, 1):
+        _y0 = int(SB.max()) - 80; _y1 = min(H - 1, int(SB.max()) + 200)
+        _c = np.full(_y1 - _y0, np.nan); _h = np.full(_y1 - _y0, np.nan)
+        for _i, _y in enumerate(range(_y0, _y1)):
+            _a = [u for u in useky(body[_y]) if not (u[0] <= 512 <= u[1]) and ((u[1] < 512) if _sd < 0 else (u[0] > 512)) and abs((u[0] + u[1]) / 2 - 512) > 120]
+            if _a: _u = _a[0] if _sd < 0 else _a[-1]; _c[_i] = (_u[0] + _u[1]) / 2; _h[_i] = (_u[1] - _u[0]) / 2
+        _ok = ~np.isnan(_c)
+        if _ok.sum() < 20: continue
+        _ii = np.arange(len(_c)); _c = np.interp(_ii, _ii[_ok], _c[_ok]); _h = np.interp(_ii, _ii[_ok], _h[_ok])
+        _c = _gf(_c, 6); _h = _gf(_h, 6)
+        for _i, _y in enumerate(range(_y0, _y1)):
+            _lo, _hi = int(round(_c[_i] - _h[_i] - 9)), int(round(_c[_i] + _h[_i] + 9))
+            _z = np.zeros(W, bool)
+            _z[max(0, _lo - 100):max(0, _lo)] = True; _z[min(W, _hi + 1):min(W, _hi + 101)] = True
+            if _sd < 0: _z[512:] = False
+            else: _z[:512] = False
+            _z &= np.abs(xs[0] - 512) > 140
+            R[_y] |= _z & ~A[_y]
 _pp = Path("nastroje/podpazi") / f"{n}.png"            # okno v podpaží zbroje (mezi rukávem a trupem): je vidět látka pod ní
 if _pp.exists():
     _P = np.array(Image.open(_pp).convert("L")) > 128
