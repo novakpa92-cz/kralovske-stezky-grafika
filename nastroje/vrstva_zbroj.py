@@ -106,7 +106,7 @@ if len(_v):                                          # vně rukávu (oděv trč�
     for _e, _d in ((_v.min(), -1), (_v.max(), 1)):
         _q = np.arange(_e, _e - 15 * _d, -_d); _sl = np.polyfit(_q, SB[_q], 1)[0] if len(_q) > 3 else 0
         _xx = np.arange(0, _e) if _d < 0 else np.arange(_e + 1, W)
-        SB[_xx] = np.clip(SB[_e] + _sl * (_xx - _e), SB[_e], SB[_e] + 40).astype(int)   # vně rukávu nikdy výš než krajní sloupec
+        SB[_xx] = np.clip(SB[_e] + 0.8 * np.abs(_xx - _e), SB[_e], SB[_e] + 40).astype(int)   # vně rukávu: hrana šikmo dolů od rohu rukávu
 _bsep = next((y for y in range(top + 100, 800) if len([u for u in useky(body[y]) if u[1] < 512 - 60]) >= 1 and len(useky(body[y])) >= 3), top + 190)
 PY = int(min(SB.max(), _bsep + 25))                   # výška podpaží (u dlouhých rukávů ne spodek rukávu)
 # paže: plné rukávy → na paži nic zespodu (až k zápěstí); krátké → jen do konce rukávu
@@ -348,10 +348,17 @@ if ruk == "kratke" and SB.max() >= PY + 40:             # dlouhý rukáv zbroje:
         elif len(ax):
             m_ = ((xs[0] < ax.min()) | (xs[0] > ax.max())) & (y <= SB + 2)
         else: continue
+        _us = useky(A[y])                                 # mezera mezi trupem zbroje a rukávem v tomto řádku: nic zespodu
+        _tr = [u for u in _us if abs((u[0] + u[1]) / 2 - 512) < 160]
+        if _tr and len(_us) > len(_tr):
+            _a0, _b0 = min(u[0] for u in _tr), max(u[1] for u in _tr)
+            _lv = [u for u in _us if u[1] < _a0]; _pv = [u for u in _us if u[0] > _b0]
+            if _lv: m_[max(u[1] for u in _lv) + 1:_a0] = True
+            if _pv: m_[_b0 + 1:min(u[0] for u in _pv)] = True
         R[y] |= m_
         RB[y] |= m_ & ~(((t[y, :, 0] - t[y, :, 1]) / np.maximum(t[y, :, 0], 1e-3)) >= .19)   # prádlo taky, kůže ne
     _as = A & (ys > top + 60) & (np.abs(xs - 512) > 125)          # rukávy zbroje
-    _near = (cv2.dilate(_as.astype(np.uint8), cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (45, 45))) > 0) & ~A & (ys <= int(SB.max()) + 2) & (np.abs(xs - 512) > 95)
+    _near = (cv2.dilate(_as.astype(np.uint8), cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (45, 45))) > 0) & ~A & (ys <= np.where(SB >= 0, SB, int(SB.max()))[None, :] - 2) & (np.abs(xs - 512) > 95)
     R |= _near                                          # těsně kolem dlouhého rukávu nic zespodu (cáry, prosvítání)
 if ruk == "kratke":                                    # oděv vyčuhující nad rameny zbroje (límec, kožešina) u krajů pryč, průkrčník zůstává
     for y in range(max(0, top - 50), top + 70):
