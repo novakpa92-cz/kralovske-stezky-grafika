@@ -145,7 +145,7 @@ if ruk == "kratke":                                    # podpaží: pás u boku 
             _pod &= _pa
         R[y, _pod] = False; RT[y, _pod] = False
         pas = np.zeros(W, bool)
-        if y > SB.max() + 4: pas[max(0, l_ - 26):l_] = True; pas[r_ + 1:r_ + 27] = True   # v podpaží (mezi rukávem a trupem zbroje) látka zůstává
+        if y > SB.max() + 40: pas[max(0, l_ - 26):l_] = True; pas[r_ + 1:r_ + 27] = True   # v podpaží (mezi rukávem a trupem zbroje) látka zůstává
         if SB.max() - 20 < y < 700:                    # pod podpažím: všechno mezi paží (+ tloušťka rukávu) a bokem zbroje pryč
             _ar = [u for u in useky(body[y]) if not (u[0] <= 512 <= u[1])]
             _al = [u for u in _ar if u[1] < l_]; _ap = [u for u in _ar if u[0] > r_]
@@ -341,6 +341,23 @@ if _pp.exists():
     _P = np.array(Image.open(_pp).convert("L")) > 128
     _P = cv2.dilate(_P.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
     R &= ~_P; RB &= ~_P
+if ruk == "kratke":                                    # každá díra v obrysu zbroje mezi rukávem a trupem (podpaží) ukazuje látku pod ní
+    _hl2 = cv2.morphologyEx(A.astype(np.uint8), cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (61, 61))) > 0
+    _d2 = _hl2 & ~A & (np.abs(xs - 512) > 70) & (np.abs(xs - 512) < 190) & (ys > top + 30) & (ys < SB.max() + 12)
+    for _y in range(top + 30, int(SB.max()) + 30):        # i řádky, kde je mezi rukávem a trupem otevřeno dolů: až ke spodku rukávu
+        _sl = [u for u in useky(A[_y]) if abs((u[0] + u[1]) / 2 - 512) < 200]
+        if not _sl: continue
+        _l, _r = min(u[0] for u in _sl), max(u[1] for u in _sl)
+        _lt = [u for u in useky(A[_y]) if u[1] < _l]; _rt = [u for u in useky(A[_y]) if u[0] > _r]
+        if _lt: _d2[_y, max(u[1] for u in _lt) + 1:_l] = True
+        if _rt: _d2[_y, _r + 1:min(u[0] for u in _rt)] = True
+    _sm = int(SB.max()); _sg0 = [u for u in useky(A[_sm + 5]) if abs((u[0] + u[1]) / 2 - 512) < 200]
+    if _sg0:                                          # pod rukávem u podpaží: látka spojitě až k trupu, spodní hrana obloukem (u trupu výš, k paži níž)
+        _l0, _r0 = min(u[0] for u in _sg0), max(u[1] for u in _sg0)
+        _dist = np.where(xs < 512, _l0 - xs, xs - _r0).astype(np.float32)
+        _bot = _sm - 15 + np.clip(_dist, 0, None) * 1.3
+        _d2 |= ~A & (np.abs(xs - 512) > 70) & (np.abs(xs - 512) < 200) & (ys > _sm - 40) & (ys < np.minimum(_bot, _sm + 40))
+    R &= ~_d2; RB &= ~_d2
 jm = f"{n}__{OD}" if OD else n
 uloz(R, D / f"{jm}-skryva.webp"); uloz(RB, D / f"{jm}-skryva-telo.webp")
 j = json.load(open(D / "skryva.json"))
