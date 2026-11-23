@@ -208,5 +208,60 @@
   "freesound": 538438,
   "url": "https://freesound.org/s/538438/",
   "licence": "CC0"
+ },
+ "pole": {
+  "freesound": 414907,
+  "url": "https://freesound.org/s/414907/",
+  "licence": "CC0"
+ },
+ "kurnik": {
+  "freesound": 192035,
+  "url": "https://freesound.org/s/192035/",
+  "licence": "CC0"
+ },
+ "chlev": {
+  "freesound": 182506,
+  "url": "https://freesound.org/s/182506/",
+  "licence": "CC0"
+ },
+ "kosa": {
+  "freesound": 251660,
+  "url": "https://freesound.org/s/251660/",
+  "licence": "CC0"
+ },
+ "seti": {
+  "freesound": 488393,
+  "url": "https://freesound.org/s/488393/",
+  "licence": "CC0"
+ },
+ "kladivo-drevo": {
+  "freesound": 173941,
+  "url": "https://freesound.org/s/173941/",
+  "licence": "CC0"
+ },
+ "slepice": {
+  "freesound": 456803,
+  "url": "https://freesound.org/s/456803/",
+  "licence": "CC0"
+ },
+ "koza": {
+  "freesound": 581240,
+  "url": "https://freesound.org/s/581240/",
+  "licence": "CC0"
+ },
+ "ovce": {
+  "freesound": 172712,
+  "url": "https://freesound.org/s/172712/",
+  "licence": "CC0"
+ },
+ "prase": {
+  "freesound": 442906,
+  "url": "https://freesound.org/s/442906/",
+  "licence": "CC0"
+ },
+ "krava": {
+  "freesound": 59245,
+  "url": "https://freesound.org/s/59245/",
+  "licence": "CC0"
  }
 }
