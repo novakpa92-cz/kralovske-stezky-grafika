@@ -350,6 +350,9 @@ if ruk == "kratke" and SB.max() >= PY + 40:             # dlouhý rukáv zbroje:
         else: continue
         R[y] |= m_
         RB[y] |= m_ & ~(((t[y, :, 0] - t[y, :, 1]) / np.maximum(t[y, :, 0], 1e-3)) >= .19)   # prádlo taky, kůže ne
+    _as = A & (ys > top + 60) & (np.abs(xs - 512) > 125)          # rukávy zbroje
+    _near = (cv2.dilate(_as.astype(np.uint8), cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (45, 45))) > 0) & ~A & (ys <= int(SB.max()) + 2) & (np.abs(xs - 512) > 95)
+    R |= _near                                          # těsně kolem dlouhého rukávu nic zespodu (cáry, prosvítání)
 if ruk == "kratke":                                    # oděv vyčuhující nad rameny zbroje (límec, kožešina) u krajů pryč, průkrčník zůstává
     for y in range(max(0, top - 50), top + 70):
         ax = np.where(A[y])[0]
