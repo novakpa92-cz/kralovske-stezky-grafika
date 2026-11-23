@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Královské stezky – plátno postavy</title>
+<style>
+:root{--bg:#16110b;--panel:#231b11;--line:#5a4a2c;--gold:#d8b45c;--text:#efe6d2;--muted:#b9a985}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,sans-serif}
+.wrap{display:grid;grid-template-columns:320px 1fr;height:100vh}
+aside{padding:14px;overflow:auto;border-right:1px solid var(--line);background:var(--panel)}
+h1{font:700 18px Georgia,serif;color:var(--gold);margin:0 0 10px}
+h2{font:700 13px Georgia,serif;color:var(--gold);margin:14px 0 6px;letter-spacing:.04em;text-transform:uppercase}
+.row{display:flex;gap:6px;align-items:center;margin:5px 0;flex-wrap:wrap}
+label.slot{display:grid;grid-template-columns:22px 70px 1fr;align-items:center;gap:6px;margin:4px 0;padding:4px 6px;border-radius:6px;border:1px solid transparent;cursor:pointer}
+label.slot.on{border-color:var(--gold);background:#3a2c18}
+select,button,input[type=number]{font:inherit;color:var(--text);background:#2e2416;border:1px solid var(--line);border-radius:6px;padding:4px 7px}
+button{cursor:pointer}button:hover{filter:brightness(1.25)}button.primary{background:var(--gold);color:#20170b;border-color:#f0d69a;font-weight:700}
+.chip.on{background:var(--gold);color:#20170b}
+main{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:radial-gradient(#3a2c1c,#120d08)}
+canvas{height:96vh;max-width:100%;cursor:grab;touch-action:none;filter:drop-shadow(0 10px 30px #000a)}
+canvas.drag{cursor:grabbing}
+.muted{color:var(--muted);font-size:12px}
+.ctl{display:grid;grid-template-columns:62px 1fr 62px 14px;gap:5px 6px;align-items:center;margin:6px 0}.ctl input[type=range]{width:100%}.ctl input[type=number]{width:62px}
+textarea{width:100%;height:120px;font:11px ui-monospace,monospace;background:#0f0b07;color:#e9d9b0;border:1px solid var(--line);border-radius:6px}
+.vals{font:12px ui-monospace,monospace;color:#e9d9b0}
+input[type=range]{width:150px;accent-color:var(--gold)}
+.toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#2a1c10;border:1px solid var(--gold);padding:8px 14px;border-radius:8px;opacity:0;transition:.3s}
+.toast.on{opacity:1}
+</style></head><body>
+<div class="wrap">
+<aside>
+ <h1>⚔️ Plátno postavy</h1>
+ <div class="muted">Vyber díl (kroužek) a nástroj níž, pak pracuj myší přímo na postavě. Nastavení se samo ukládá v prohlížeči. S helmou se vlasy nekreslí (jako ve hře).</div>
+ <h2>Postava</h2>
+ <div class="row"><button class="chip" data-sex="muz">Muž</button><button class="chip" data-sex="zena">Žena</button>
+  <button id="zoom" class="chip">🔍 Hlava</button><button id="zfull" class="chip">⤢ Celá postava</button><span class="muted" id="zlab"></span><div class="muted" style="width:100%">Kolečko = přiblížit tam, kam míříš. Posun pohledu: pravé nebo prostřední tlačítko, nebo mezerník + tah. 0 = celá postava.</div><button id="ghost" class="chip">👻 Jen vybraný díl</button></div>
+ <h2>Výbava (kroužek = upravuji)</h2>
+ <div id="slots"></div>
+ <h2>Nástroj</h2>
+ <div class="row tools"><button class="chip" data-tool="move">✋ Posun</button><button class="chip" data-tool="mesh">🕸 Síť</button><button class="chip" data-tool="cut">✂ Výřez</button><button class="chip" data-tool="erase">🧽 Guma</button><button class="chip" data-tool="restore">🖌 Vrátit</button><button class="chip" data-tool="paint">🎨 Malovat</button><button class="chip" data-tool="pick">💧 Kapátko</button><button class="chip" data-tool="clone">🪞 Razítko</button><button class="chip" data-tool="fill">🖍 Obkreslit a vyplnit</button><button class="chip" data-tool="hide">🫥 Schová pod sebou</button></div>
+ <div class="row" id="hiderow"><label title="Zakryje i tělo pod dílem: vyčuhující prsty, kůži, ucho…"><input type="checkbox" id="hidebody"> i tělo (prsty, kůže)</label><label><input type="checkbox" id="hideall"> ukázat všechny masky</label><button id="hidereset">Smazat masku schovávání</button></div>
+ <div class="row" id="paintrow">Barva <input type="color" id="pcol" style="width:44px;height:28px;padding:0;border:0;background:none"> <span id="pswatch" class="muted"></span> Krytí <input type="range" id="pop" min="5" max="100" step="5" style="width:90px"> <span id="popv" class="muted"></span><label><input type="checkbox" id="patop"> jen na díl</label><label><input type="checkbox" id="psoft"> měkký okraj</label></div>
+ <div class="row" id="meshrow"><button id="meshreset2">↺ Vrátit síť k uloženému</button></div>
+ <div class="row"><button id="undo">↶ Zpět (Ctrl+Z)</button><button id="redo">↷ Znovu</button><button class="primary" id="ckpt">💾 Uložit (Ctrl+S)</button></div>
+ <div class="row muted" id="ckptinfo"></div>
+ <div class="row" id="eraserrow">Štětec <input type="range" id="eraser" min="3" max="200" step="1" style="width:130px"> <span id="eraserv" class="muted"></span> <button id="maskreset">Smazat gumu, výřezy a malbu</button></div>
+ <div class="muted" id="toolhelp"></div>
+ <h2>Vybraný díl</h2>
+ <div class="vals" id="vals"></div>
+ <div class="ctl">
+  <label>Velikost</label><input type="range" id="r_s" min="50" max="150" step="0.5"><input type="number" id="n_s" step="0.5"><span>%</span>
+  <label>Šířka</label><input type="range" id="r_sx" min="50" max="150" step="0.5"><input type="number" id="n_sx" step="0.5"><span>%</span>
+  <label>Výška</label><input type="range" id="r_sy" min="50" max="150" step="0.5"><input type="number" id="n_sy" step="0.5"><span>%</span>
+  <label>Natočení</label><input type="range" id="r_r" min="-45" max="45" step="0.5"><input type="number" id="n_r" step="0.5"><span>°</span>
+  <label title="Kladné = horní část dozadu (od diváka)">Náklon dozadu</label><input type="range" id="r_tx" min="-60" max="60" step="1"><input type="number" id="n_tx" step="1"><span>°</span>
+  <label title="Kladné = pravá strana dozadu">Pootočení do strany</label><input type="range" id="r_ty" min="-60" max="60" step="1"><input type="number" id="n_ty" step="1"><span>°</span>
+ </div>
+ <h2>Síť (deformace po částech)</h2>
+ <div class="row">
+  <select id="gdim"><option value="4x6">hrubá 4×6</option><option value="6x9">střední 6×9</option><option value="8x12">jemná 8×12</option><option value="12x18">velmi jemná 12×18</option><option value="16x24">hustá 16×24</option><option value="24x36">velmi hustá 24×36</option></select>
+  <button id="meshreset">↺ Vrátit síť k uloženému</button></div>
+ <div class="row">Měkký štětec <input type="range" id="brush" min="0" max="5" step="1" style="width:110px"> <span id="brushv" class="muted"></span></div>
+ <div class="muted">Hustotu můžeš měnit kdykoli, tvar sítě zůstane. Shift + tah = vyber víc bodů obdélníkem, Shift + klik = přidat/odebrat bod, pak táhni kterýkoli vybraný. Esc = zrušit výběr.</div>
+ <div class="row"><button id="flip" class="chip">⇋ Zrcadlit</button><span class="muted">Q / E = natočit, Alt + kolečko = velikost, Shift + kolečko = šířka, Ctrl + kolečko = výška</span></div>
+ <div class="row"><button data-n="0,-1">↑</button><button data-n="0,1">↓</button><button data-n="-1,0">←</button><button data-n="1,0">→</button><button id="reset">Vrátit díl k uloženému</button></div>
+ <h2>Hotovo?</h2>
+ <div class="row"><button class="primary" id="copy">📋 Zkopírovat nastavení</button><button id="resetall">Vrátit vše k uloženému</button></div>
+ <div class="row"><button id="tofile">📁 Uložit do souboru</button><button id="fromfile">📂 Načíst ze souboru</button><input type="file" id="filein" accept=".json,application/json" style="display:none"></div>
+ <div class="muted">Zkopírované nastavení vlož do chatu Claudovi — zapracuje ho do obrázků pro hru.</div>
+ <textarea id="out" readonly></textarea>
+</aside>
+<main><canvas id="cv" width="1024" height="1536"></canvas></main>
+</div>
+<div class="toast" id="toast"></div>
+<script src="obrazky.js"></script>
+<script>
+const BASE='img/';
+const FILES=["batoh-velky-zena", "batoh-velky", "batoh-zena", "batoh", "helma-bascinet-zena", "helma-bascinet", "helma-batvat", "helma-havirska", "helma-helmice-zena", "helma-helmice", "helma-kapalin-zena", "helma-kapalin", "helma-krouzkova-kukla-zena", "helma-krouzkova-kukla", "helma-nosova-zena", "helma-nosova", "helma-rytirsky-helm-zena", "helma-rytirsky-helm", "helma-velka-zena", "helma-velka", "odev-muz-kozich", "odev-muz-lnena-kosile", "odev-muz-suknice", "odev-muz-vlneny-kabatec", "odev-zena-kozisek", "odev-zena-lnena-kosilka", "odev-zena-saty", "odev-zena-vlnene-saty", "opasek-kozeny", "plast-muz-cestovni", "plast-muz-lehky", "plast-muz-vlneny-s-kapi", "plast-zena-cestovni", "plast-zena-lehky", "plast-zena-vlneny-s-kapi", "postava-telo-muz", "postava-telo-zena", "svetlo-louc-zena", "svetlo-louc", "svetlo-lucerna-zena", "svetlo-lucerna", "vlasy-muz-copanek", "vlasy-muz-dlouhe", "vlasy-muz-kratke", "vlasy-muz-kudrnate", "vlasy-muz-ofina", "vlasy-muz-stredni", "vlasy-muz-tonzura", "vlasy-zena-copanek", "vlasy-zena-dlouhe", "vlasy-zena-kratke", "vlasy-zena-kudrnate", "vlasy-zena-ofina", "vlasy-zena-stredni", "vlasy-zena-tonzura", "vousy-bradka", "vousy-dlouhy", "vousy-knir-s-bradkou", "vousy-knirek", "vousy-plnovous", "vousy-rozdvojeny", "vousy-strniste", "zbroj-muz-brigantina", "zbroj-muz-cerny-plat", "zbroj-muz-goticky-plat", "zbroj-muz-kapitanova-brigantina", "zbroj-muz-kozena", "zbroj-muz-krouzkova", "zbroj-muz-medvedi", "zbroj-muz-platova", "zbroj-muz-platovy-kyrys", "zbroj-muz-prosivana", "zbroj-muz-purkrabiho-brigantina", "zbroj-zena-brigantina", "zbroj-zena-cerny-plat", "zbroj-zena-goticky-plat", "zbroj-zena-kapitanova-brigantina", "zbroj-zena-kozena", "zbroj-zena-krouzkova", "zbroj-zena-medvedi", "zbroj-zena-platova", "zbroj-zena-platovy-kyrys", "zbroj-zena-prosivana", "zbroj-zena-purkrabiho-brigantina"];
+const SLOTS=[['odev','Oděv'],['zbroj','Zbroj'],['opasek','Opasek'],['plast','Plášť'],['batoh','Batoh'],['vlasy','Vlasy'],['helma','Helma'],['vousy','Vousy'],['svetlo','Světlo']];
+// které soubory patří ke kterému dílu a pohlaví
+function options(slot,sex){
+  const fem=sex==='zena';
+  return FILES.filter(f=>{
+    if(!f.startsWith(slot==='opasek'?'opasek':slot+'-'))return false;
+    if(['odev','zbroj','plast','vlasy'].includes(slot))return f.startsWith(slot+'-'+sex+'-');
+    if(slot==='vousy')return !fem;
+    if(['helma','batoh','svetlo'].includes(slot)){const z=/-zena$/.test(f);if(fem)return z||!FILES.includes(f+'-zena');return !z}
+    return true});
+}
+const DEF={muz:{odev:'odev-muz-lnena-kosile',zbroj:'zbroj-muz-krouzkova',opasek:'opasek-kozeny',plast:'',batoh:'',vlasy:'vlasy-muz-kratke',helma:'helma-kapalin',vousy:'vousy-bradka',svetlo:''},
+           zena:{odev:'odev-zena-lnena-kosilka',zbroj:'zbroj-zena-krouzkova',opasek:'opasek-kozeny',plast:'',batoh:'',vlasy:'',helma:'helma-kapalin-zena',vousy:'',svetlo:''}};
+const LS=(k,d)=>{try{return JSON.parse(localStorage.getItem('ks_platno_'+k))??d}catch{return d}};
+const SV=(k,v)=>{try{localStorage.setItem('ks_platno_'+k,JSON.stringify(v))}catch{}};
+let sex=LS('sex','muz'), pick=LS('pick',DEF), active=LS('active','helma'), T=LS('T',{}), zoom=false, ghost=false;
+const imgs={}, boxes={};
+function img(n){if(!imgs[n]){const i=new Image();i.crossOrigin='anonymous';i.onload=()=>{bbox(n);draw()};i.src=(window.OBRAZKY&&OBRAZKY[n])||BASE+n+'.webp';imgs[n]=i}return imgs[n]}
+function bbox(n){const i=imgs[n],c=document.createElement('canvas');c.width=i.width;c.height=i.height;const x=c.getContext('2d');x.drawImage(i,0,0);
+  try{const d=x.getImageData(0,0,c.width,c.height).data;let a=1e9,b=1e9,e=-1,f=-1;for(let y=0;y<c.height;y+=2)for(let X=0;X<c.width;X+=2){if(d[(y*c.width+X)*4+3]>40){if(X<a)a=X;if(X>e)e=X;if(y<b)b=y;if(y>f)f=y}}boxes[n]=e<0?null:{x0:a,y0:b,x1:e,y1:f}}catch{boxes[n]=null}}
+const ZERO={dx:0,dy:0,s:100,sx:100,sy:100,r:0,f:0,tx:0,ty:0};
+const t=n=>({...ZERO,...(T[n]||{})});
+const changed=o=>(o.h&&o.h.length)||o.tx||o.ty||o.dx||o.dy||o.s!==100||o.sx!==100||o.sy!==100||o.r||o.f||(o.m&&o.m.length);
+// kotva zvětšení: helma a vlasy dole uprostřed (dosednutí na hlavu), ostatní střed
+function anchor(n){const b=boxes[n];if(!b)return[512,768];const cx=(b.x0+b.x1)/2;return n.startsWith('helma')||n.startsWith('vlasy')?[cx,b.y1]:[cx,(b.y0+b.y1)/2]}
+const cv=document.getElementById('cv'),cxMain=cv.getContext('2d');let cx=cxMain;
+const CL=document.createElement('canvas');CL.width=1024;CL.height=1536;const clx=CL.getContext('2d');
+const BL=document.createElement('canvas');BL.width=1024;BL.height=1536;const blx=BL.getContext('2d');
+function withCtx(c,f){const o=cx;cx=c;try{f()}finally{cx=o}}
+let poly=[], hover=null, eraser=LS('eraser',18), tool='move', gridDim=LS('grid','6x9'), brush=LS('brush',1), hot=null, pcol=LS('pcol','#6b4a2e'), pop=LS('pop',100), patop=LS('patop',1), psoft=LS('psoft',1);
+/** Globální transformace dílu (posun, natočení, velikost, šířka, výška, zrcadlení) kolem kotvy. */
+function xf(n){const o=t(n),[ax,ay]=anchor(n),k=o.s/100;cx.translate(ax+o.dx,ay+o.dy);cx.rotate(o.r*Math.PI/180);cx.scale(k*o.sx/100*(o.f?-1:1),k*o.sy/100);cx.translate(-ax,-ay)}
+/** Síť dílu: c×r políček přes obrys dílu (+ okraj), posuny bodů v pixelech obrázku. */
+function grid(n){const o=T[n]||{};let G=o.g;let b=boxes[n]||{x0:0,y0:0,x1:1024,y1:1536};
+  if(!G&&o.m){b={...b};for(const q of o.m){const pts=Array.isArray(q)?(q[3]==='p'||q[3]==='c'?[[q[0]-q[2],q[1]-q[2]],[q[0]+q[2],q[1]+q[2]]]:[]):q.v==='f'?q.p:[];for(const [x,y] of pts){b.x0=Math.min(b.x0,x);b.y0=Math.min(b.y0,y);b.x1=Math.max(b.x1,x);b.y1=Math.max(b.y1,y)}}}
+  if(!G){const [c,r]=gridDim.split('x').map(Number),m=12;G={c,r,box:[Math.max(0,b.x0-m),Math.max(0,b.y0-m),Math.min(1024,b.x1+m),Math.min(1536,b.y1+m)],p:Array((c+1)*(r+1)).fill(0).map(()=>[0,0])}}
+  G._t=[+(o.tx||0),+(o.ty||0)];return G}
+const gbase=(G,c,r)=>[G.box[0]+(G.box[2]-G.box[0])*c/G.c,G.box[1]+(G.box[3]-G.box[1])*r/G.r];
+const gp=(G,c,r)=>{const [x,y]=gbase(G,c,r),q=G.p[r*(G.c+1)+c];return tilt(G,x+q[0],y+q[1])};
+/** Náklon a pootočení: bod se otočí ve 3D kolem středu dílu a promítne s perspektivou. */
+function tilt(G,x,y){const t=G._t;if(!t||(!t[0]&&!t[1]))return[x,y];const a=t[0]*Math.PI/180,b=t[1]*Math.PI/180,F=1100,
+  cx0=(G.box[0]+G.box[2])/2,cy0=(G.box[1]+G.box[3])/2,dx=x-cx0,dy=y-cy0;
+  const y1=dy*Math.cos(a),z1=-dy*Math.sin(a),x2=dx*Math.cos(b),z2=z1*Math.cos(b)+dx*Math.sin(b),k=F/(F+z2);
+  return[cx0+x2*k,cy0+y1*k]}
+const meshMoved=n=>{const g=(T[n]||{}).g;return !!(g&&g.p.some(q=>q[0]||q[1]))};
+const warped=n=>meshMoved(n)||!!((T[n]||{}).tx||(T[n]||{}).ty);
+const mcache={},hcache={};
+/** Maska „schová pod sebou“ v souřadnicích obrázku dílu: bílá = tady se oblečení pod dílem neukáže. */
+const hasBaseHide=(n,b)=>!!(window.SKRYVA&&(b?SKRYVA.telo:SKRYVA.obleceni)?.includes(n));
+/** body=0: maska pro oblečení pod dílem (všechny tahy), body=1: maska i pro tělo (jen tahy „i tělo“). */
+function hideMask(n,tint,body){body=body?1:0;const h0=(T[n]||{}).h||[],h=body?h0.filter(q=>q[4]||q[3]):h0,bi=hasBaseHide(n,body)?img(n+(body?'-skryva-telo':'-skryva')):null;if(!h.some(q=>!q[3]&&(!body||q[4]))&&!(bi&&bi.naturalWidth))return null;const key=h.length+':'+JSON.stringify(h[h.length-1])+(tint?'t':'')+(bi&&bi.naturalWidth?'b':''),ck=n+tint+body;
+  if(hcache[ck]&&hcache[ck].key===key)return hcache[ck].c;
+  const c=document.createElement('canvas');c.width=1024;c.height=1536;const x=c.getContext('2d');if(bi&&bi.naturalWidth)x.drawImage(bi,0,0);
+  for(const q of h){x.globalCompositeOperation=q[3]?'destination-out':'source-over';x.fillStyle='#fff';x.beginPath();x.arc(q[0],q[1],q[2],0,7);x.fill()}
+  if(tint){x.globalCompositeOperation='source-in';x.fillStyle=body?'rgba(200,90,255,.55)':'rgba(79,209,255,.45)';x.fillRect(0,0,1024,1536)}
+  hcache[ck]={key,c};return c}
+/** Obrázek dílu s gumou (smazaná místa průhledná); vrací plátno, nebo původní obrázek. */
+function masked(n,i){const m=(T[n]||{}).m;if(!m||!m.length)return i;const key=n+':'+m.length+':'+JSON.stringify(m[m.length-1]);
+  if(mcache[n]&&mcache[n].key===key)return mcache[n].c;
+  const P=mcache[n],inc=P&&P.i===i&&P.len<m.length&&P.lastJ===JSON.stringify(m[P.len-1]);   // při malování se jen přidává → dokresli jen nové tahy
+  let c,x;if(inc){c=P.c;x=c.getContext('2d')}else{c=document.createElement('canvas');c.width=i.width;c.height=i.height;x=c.getContext('2d');x.drawImage(i,0,0)}
+  for(const q of m.slice(inc?P.len:0)){x.save();x.beginPath();let mode,bb;
+    if(Array.isArray(q)&&q[3]==='p'){const [px,py,r,,col,op,atop,soft]=q;x.globalAlpha=(op==null?100:op)/100;x.globalCompositeOperation=atop?'source-atop':'source-over';
+      if(soft){const g=x.createRadialGradient(px,py,r*.35,px,py,r);g.addColorStop(0,col);g.addColorStop(1,col+'00');x.fillStyle=g}else x.fillStyle=col;
+      x.arc(px,py,r,0,7);x.fill();x.restore();continue}
+    if(!Array.isArray(q)&&q.v==='f'){q.p.forEach(([a,b],k)=>k?x.lineTo(a,b):x.moveTo(a,b));x.closePath();x.globalAlpha=(q.o??100)/100;x.globalCompositeOperation=q.a?'source-atop':'source-over';x.fillStyle=q.c;x.fill();x.restore();continue}
+    if(Array.isArray(q)&&q[3]==='c'){const [px,py,r,,ox,oy,op,soft]=q,d=2*Math.ceil(r),t=document.createElement('canvas');t.width=t.height=d;const tx=t.getContext('2d');
+      tx.drawImage(c,px+ox-d/2,py+oy-d/2,d,d,0,0,d,d);tx.globalCompositeOperation='destination-in';const g=tx.createRadialGradient(d/2,d/2,soft?r*.35:r*.97,d/2,d/2,r);g.addColorStop(0,'#000');g.addColorStop(1,'rgba(0,0,0,0)');tx.fillStyle=g;tx.fillRect(0,0,d,d);
+      x.globalAlpha=(op??100)/100;x.drawImage(t,px-d/2,py-d/2);x.restore();continue}
+    if(Array.isArray(q)){const [px,py,r]=q;mode=q[3];x.arc(px,py,r,0,7);bb=[px-r,py-r,2*r,2*r]}
+    else{mode=q.v;q.p.forEach(([a,b],k)=>k?x.lineTo(a,b):x.moveTo(a,b));x.closePath();const xs=q.p.map(v=>v[0]),ys=q.p.map(v=>v[1]);bb=[Math.min(...xs),Math.min(...ys),Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys)]}
+    if(mode){x.clip();x.clearRect(...bb);x.drawImage(i,0,0)}else{x.globalCompositeOperation='destination-out';x.fill()}x.restore()}
+  mcache[n]={key,c,i,len:m.length,lastJ:JSON.stringify(m[m.length-1])};return c}
+function drawWarped(n,i,raw){
+  if(!raw)i=masked(n,i);
+  if(!warped(n)){cx.drawImage(i,0,0);return}
+  const G=grid(n);
+  cx.save();cx.beginPath();cx.rect(-4096,-4096,9216,9216);cx.rect(G.box[0],G.box[1],G.box[2]-G.box[0],G.box[3]-G.box[1]);cx.clip('evenodd');cx.drawImage(i,0,0);cx.restore();
+  // mimo síť nic není (síť pokrývá celý obrys dílu), uvnitř se kreslí po trojúhelnících
+  for(let r=0;r<G.r;r++)for(let c=0;c<G.c;c++){
+    const s00=gbase(G,c,r),s10=gbase(G,c+1,r),s01=gbase(G,c,r+1),s11=gbase(G,c+1,r+1);
+    const d00=gp(G,c,r),d10=gp(G,c+1,r),d01=gp(G,c,r+1),d11=gp(G,c+1,r+1);
+    tri(i,s00,s10,s11,d00,d10,d11);tri(i,s00,s11,s01,d00,d11,d01)}
+}
+function tri(i,s0,s1,s2,d0,d1,d2){
+  const cxm=(d0[0]+d1[0]+d2[0])/3,cym=(d0[1]+d1[1]+d2[1])/3,ex=p=>{const dx=p[0]-cxm,dy=p[1]-cym,l=Math.hypot(dx,dy)||1;return[p[0]+dx/l*.9,p[1]+dy/l*.9]};
+  const e0=ex(d0),e1=ex(d1),e2=ex(d2);
+  cx.save();cx.beginPath();cx.moveTo(e0[0],e0[1]);cx.lineTo(e1[0],e1[1]);cx.lineTo(e2[0],e2[1]);cx.closePath();cx.clip();
+  const den=(s1[0]-s0[0])*(s2[1]-s0[1])-(s2[0]-s0[0])*(s1[1]-s0[1]);
+  if(Math.abs(den)>1e-6){
+    const a=((d1[0]-d0[0])*(s2[1]-s0[1])-(d2[0]-d0[0])*(s1[1]-s0[1]))/den, b=((d1[1]-d0[1])*(s2[1]-s0[1])-(d2[1]-d0[1])*(s1[1]-s0[1]))/den,
+          c=((d2[0]-d0[0])*(s1[0]-s0[0])-(d1[0]-d0[0])*(s2[0]-s0[0]))/den, d=((d2[1]-d0[1])*(s1[0]-s0[0])-(d1[1]-d0[1])*(s2[0]-s0[0]))/den,
+          e=d0[0]-a*s0[0]-c*s0[1], f=d0[1]-b*s0[0]-d*s0[1];
+    cx.transform(a,b,c,d,e,f);cx.drawImage(i,0,0)}
+  cx.restore()}
+/** Bod zdeformovaného dílu → bod v původním obrázku (najde trojúhelník sítě a přepočte ho). */
+function unwarp(n,L){if(!warped(n))return L;const G=grid(n);
+  const bary=(p,a,b,c)=>{const d=(b[1]-c[1])*(a[0]-c[0])+(c[0]-b[0])*(a[1]-c[1]);if(Math.abs(d)<1e-9)return null;
+    const u=((b[1]-c[1])*(p[0]-c[0])+(c[0]-b[0])*(p[1]-c[1]))/d,v=((c[1]-a[1])*(p[0]-c[0])+(a[0]-c[0])*(p[1]-c[1]))/d;return[u,v,1-u-v]};
+  for(let r=0;r<G.r;r++)for(let c=0;c<G.c;c++){
+    const S=[gbase(G,c,r),gbase(G,c+1,r),gbase(G,c+1,r+1),gbase(G,c,r+1)],D=[gp(G,c,r),gp(G,c+1,r),gp(G,c+1,r+1),gp(G,c,r+1)];
+    for(const [i,j,k] of [[0,1,2],[0,2,3]]){const w=bary(L,D[i],D[j],D[k]);if(w&&w[0]>=-1e-6&&w[1]>=-1e-6&&w[2]>=-1e-6)
+      return[w[0]*S[i][0]+w[1]*S[j][0]+w[2]*S[k][0],w[0]*S[i][1]+w[1]*S[j][1]+w[2]*S[k][1]]}}
+  return L}
+/** Bod plátna → souřadnice v obrázku dílu (inverze globální transformace). */
+function toLocal(n,p){cx.save();cx.setTransform(1,0,0,1,0,0);xf(n);const m=cx.getTransform().inverse();cx.restore();return[m.a*p[0]+m.c*p[1]+m.e,m.b*p[0]+m.d*p[1]+m.f]}
+const mesh0=()=>tool==='mesh';
+const BR=[0,20,40,70,110,170];let msel=new Set();
+/** Váha posunu bodu: vybrané body 1, okolí měkce podle vzdálenosti (v pixelech obrázku, nezávisle na hustotě). */
+function meshW(G,c,r,anch){const i=r*(G.c+1)+c;if(anch.has(i))return 1;const R=BR[brush]||0;if(!R)return 0;const [x,y]=gbase(G,c,r);let w=0;
+  for(const a of anch){const ac=a%(G.c+1),ar=(a-ac)/(G.c+1),[ax,ay]=gbase(G,ac,ar),d=Math.hypot(x-ax,y-ay);if(d<R)w=Math.max(w,(1-d/R)**1.6)}return w}
+/** Převzorkování sítě na jinou hustotu se zachováním tvaru (bilineárně). */
+function resample(G,nc,nr){const P=Array((nc+1)*(nr+1));for(let r=0;r<=nr;r++)for(let c=0;c<=nc;c++){const u=c/nc*G.c,v=r/nr*G.r,c0=Math.min(G.c-1,Math.floor(u)),r0=Math.min(G.r-1,Math.floor(v)),fu=u-c0,fv=v-r0,q=(cc,rr)=>G.p[rr*(G.c+1)+cc];
+    P[r*(nc+1)+c]=[0,1].map(k=>q(c0,r0)[k]*(1-fu)*(1-fv)+q(c0+1,r0)[k]*fu*(1-fv)+q(c0,r0+1)[k]*(1-fu)*fv+q(c0+1,r0+1)[k]*fu*fv)}
+  return{c:nc,r:nr,box:[...G.box],p:P}}
+function nearest(n,p){const G=grid(n),L=toLocal(n,p);let best=null,bd=1e9;for(let r=0;r<=G.r;r++)for(let c=0;c<=G.c;c++){const [x,y]=gp(G,c,r),d=Math.hypot(x-L[0],y-L[1]);if(d<bd){bd=d;best=[c,r]}}
+  const cw=(G.box[2]-G.box[0])/G.c,ch=(G.box[3]-G.box[1])/G.r;return bd<Math.max(14,.5*Math.min(cw,ch))?best:null}
+function layers(){const L=['postava-telo-'+sex],P=pick[sex]||{};for(const [s] of SLOTS){const v=P[s];if(!v)continue;if(s==='vlasy'&&P.helma&&active!=='vlasy')continue;L.push(v)}return L}  // jako ve hře: s helmou se vlasy nekreslí
+function draw(){
+  cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,1024,1536);
+  cx.setTransform(VIEW.k,0,0,VIEW.k,VIEW.e,VIEW.f);
+  const act=(pick[sex]||{})[active];
+  // tělo rovnou, oblečení na vlastní plátno: maska dílu „schová pod sebou“ z něj vymaže, co leží pod dílem
+  for(const g of [clx,blx]){g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,1024,1536)}
+  for(const n of layers()){const i=img(n);if(!i.complete||!i.naturalWidth)continue;
+    const body=n.startsWith('postava-telo'),hm=!body&&hideMask(n),hb=!body&&hideMask(n,0,1);
+    if(hb)withCtx(blx,()=>{cx.setTransform(VIEW.k,0,0,VIEW.k,VIEW.e,VIEW.f);cx.save();cx.globalCompositeOperation='destination-out';xf(n);drawWarped(n,hb,true);cx.restore()});
+    withCtx(body?blx:clx,()=>{cx.setTransform(VIEW.k,0,0,VIEW.k,VIEW.e,VIEW.f);
+      if(hm){cx.save();cx.globalCompositeOperation='destination-out';xf(n);drawWarped(n,hm,true);cx.restore()}
+      cx.save();cx.globalAlpha=ghost&&n!==act&&!body?.25:1;xf(n);drawWarped(n,i);cx.restore()})}
+  cx.setTransform(1,0,0,1,0,0);cx.drawImage(BL,0,0);cx.drawImage(CL,0,0);cx.setTransform(VIEW.k,0,0,VIEW.k,VIEW.e,VIEW.f);
+  for(const n of layers()){if(!(tool==='hide'&&(n===act||document.getElementById('hideall').checked)))continue;for(const b of [0,1]){const t=hideMask(n,1,b);if(t){cx.save();xf(n);drawWarped(n,t,true);cx.restore()}}}
+  if(act&&boxes[act]){const b=boxes[act];cx.save();xf(act);const sc=(Math.abs(cx.getTransform().a)||1)*cv.getBoundingClientRect().width/1024;   // velikosti značek v pixelech obrazovkycx.lineWidth=1.5/sc;
+    if(tool==='mesh'){const G=grid(act);const dense=G.c>=16;cx.strokeStyle=dense?'rgba(255,211,106,.22)':'rgba(255,211,106,.35)';cx.lineWidth=1/sc;cx.setLineDash([]);
+      for(let r=0;r<=G.r;r++){cx.beginPath();for(let c=0;c<=G.c;c++){const [x,y]=gp(G,c,r);c?cx.lineTo(x,y):cx.moveTo(x,y)}cx.stroke()}
+      for(let c=0;c<=G.c;c++){cx.beginPath();for(let r=0;r<=G.r;r++){const [x,y]=gp(G,c,r);r?cx.lineTo(x,y):cx.moveTo(x,y)}cx.stroke()}
+      for(let r=0;r<=G.r;r++)for(let c=0;c<=G.c;c++){const [x,y]=gp(G,c,r),q=G.p[r*(G.c+1)+c],moved=q[0]||q[1];const isHot=hot&&hot[0]===c&&hot[1]===r,isSel=msel.has(r*(G.c+1)+c);cx.fillStyle=isSel?'#4fd1ff':moved?'#ff7a3a':'#ffd36a';cx.beginPath();cx.arc(x,y,(isSel?3:dense?1.6:2.2)/sc,0,7);cx.fill();if(isHot){cx.beginPath();cx.arc(x,y,7/sc,0,7);cx.lineWidth=1.2/sc;cx.strokeStyle='#ffffff';cx.stroke()}}
+      if(drag&&drag.rect&&drag.moved){cx.setLineDash([5/sc,4/sc]);cx.strokeStyle='#4fd1ff';cx.lineWidth=1.5/sc;cx.strokeRect(drag.a[0],drag.a[1],drag.b[0]-drag.a[0],drag.b[1]-drag.a[1]);cx.setLineDash([])}
+    }else{cx.strokeStyle='#ffd36a';cx.setLineDash([8/sc,6/sc]);cx.strokeRect(b.x0,b.y0,b.x1-b.x0,b.y1-b.y0)}
+    if((tool==='cut'||tool==='fill')&&poly.length){cx.setLineDash([]);cx.strokeStyle='#ff3b2f';cx.fillStyle='rgba(255,59,47,.22)';cx.lineWidth=2.5/sc;cx.beginPath();
+      poly.forEach(([,,a,b],k)=>k?cx.lineTo(a,b):cx.moveTo(a,b));if(hover){const L=toLocal(act,hover);cx.lineTo(L[0],L[1])}cx.fill();cx.stroke();
+      poly.forEach(([,,a,b],k)=>{cx.beginPath();cx.arc(a,b,(k?6:9)/sc,0,7);cx.fillStyle=k?'#ff3b2f':'#ffffff';cx.fill();cx.lineWidth=2/sc;cx.strokeStyle='#1a0e06';cx.stroke()})}
+    if(['erase','restore','paint','clone','hide'].includes(tool)&&hover){const L=toLocal(act,hover);cx.setLineDash([]);cx.strokeStyle=tool==='clone'?'#ffffff':tool==='paint'?pcol:tool==='erase'?'#ff5a4a':'#7fd36a';cx.lineWidth=2/sc;cx.beginPath();cx.arc(L[0],L[1],eraser,0,7);cx.stroke();
+      if(tool==='clone'&&cloneSrc){const S=drag&&drag.paint&&cloneOff?[L[0]+cloneOff[0],L[1]+cloneOff[1]]:cloneSrc,k=8/sc;cx.strokeStyle='#4fd1ff';cx.beginPath();cx.moveTo(S[0]-k,S[1]);cx.lineTo(S[0]+k,S[1]);cx.moveTo(S[0],S[1]-k);cx.lineTo(S[0],S[1]+k);cx.stroke();cx.beginPath();cx.arc(S[0],S[1],eraser,0,7);cx.setLineDash([4/sc,4/sc]);cx.stroke();cx.setLineDash([])}}
+    cx.restore()}
+  vals();out()}
+function vals(){const a=(pick[sex]||{})[active];const o=t(a||'');document.getElementById('vals').textContent=a?(a+' · posun '+o.dx+', '+o.dy+' · velikost '+o.s+' % · šířka '+o.sx+' % · výška '+o.sy+' % · natočení '+o.r+'°'+(o.f?' · zrcadleno':'')):'Žádný díl — vyber ho v seznamu.';
+  for(const k of ['s','sx','sy','r','tx','ty']){document.getElementById('r_'+k).value=o[k];document.getElementById('n_'+k).value=o[k]}
+  document.getElementById('flip').classList.toggle('on',!!o.f)}
+function out(){const d={};for(const k in T){const o=t(k);if(changed(o)||warped(k)){const r={};for(const q in ZERO)if(o[q]!==ZERO[q])r[q]=o[q];if(o.h&&o.h.length)r.h=o.h.map(q=>q.map(Math.round));if(o.m&&o.m.length)r.m=o.m.map(q=>Array.isArray(q)?q.map(v=>typeof v==='number'?Math.round(v):v):(q.v==='f'?{p:q.p.map(v=>v.map(Math.round)),v:'f',c:q.c,o:q.o,a:q.a}:{p:q.p.map(v=>v.map(Math.round)),v:q.v}));if(warped(k)){const G=grid(k);r.g={c:G.c,r:G.r,box:G.box.map(Math.round),p:G.p.map(q=>[Math.round(q[0]*10)/10,Math.round(q[1]*10)/10])}}d[k]=r}}
+  document.getElementById('out').value=JSON.stringify(d)}
+const HIST=[],FUT=[];let lastSnap=JSON.stringify(T);
+function snap(){const now=JSON.stringify(T);if(now!==lastSnap){HIST.push(lastSnap);if(HIST.length>200)HIST.shift();FUT.length=0;lastSnap=now}}
+function undo(){if(!HIST.length)return;FUT.push(JSON.stringify(T));T=JSON.parse(HIST.pop());lastSnap=JSON.stringify(T);for(const k in mcache)delete mcache[k];for(const k in hcache)delete hcache[k];SV('T',T);ui();draw()}
+function redo(){if(!FUT.length)return;HIST.push(JSON.stringify(T));T=JSON.parse(FUT.pop());lastSnap=JSON.stringify(T);for(const k in mcache)delete mcache[k];for(const k in hcache)delete hcache[k];SV('T',T);ui();draw()}
+let snapTimer=null;
+function save(){clearTimeout(snapTimer);setTimeout(()=>typeof ckptInfo==='function'&&ckptInfo(),0);snapTimer=setTimeout(snap,drag?100000:350);SV('T',T);SV('pick',pick);SV('active',active);SV('sex',sex)}
+function setT(n,o){T[n]={...t(n),...o};save();draw()}
+function ui(){
+  document.querySelectorAll('[data-sex]').forEach(b=>b.classList.toggle('on',b.dataset.sex===sex));
+  document.getElementById('zoom').classList.toggle('on',typeof VIEW!=='undefined'&&Math.abs(VIEW.k-ZOOM.k)<.01&&Math.abs(VIEW.e-ZOOM.e)<1&&Math.abs(VIEW.f-ZOOM.f)<1);document.getElementById('ghost').classList.toggle('on',ghost);document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('on',b.dataset.tool===tool));
+  document.getElementById('toolhelp').textContent={move:'Táhni díl myší. Alt+kolečko = velikost, Shift+kolečko = šířka, Ctrl+kolečko = výška, Q/E = natočení.',
+    mesh:'Táhni body sítě — třeba jen ramena nebo jen rukávy. Měkký štětec pohne i okolními body. Oranžové body jsou posunuté.',
+    cut:'Klikáním po bodech obkresli, co má zmizet. Uzavři kliknutím na bílý první bod nebo Enterem. Backspace = zpět o bod, Esc = zrušit. Vrátit jde nástrojem 🖌 Vrátit nebo tlačítkem Smazat gumu.',
+    erase:'Přetři, co se nemá ukazovat (např. zadní část helmy přes obličej). Velikost štětce: posuvník nebo Alt+kolečko.',
+    restore:'Přetři smazané nebo přemalované místo a vrátí se původní obrázek.',
+    paint:'Maluj barvou na vybraný díl. „Jen na díl“ = barva jen tam, kde díl už je (přebarvení, zakrytí). Bez toho můžeš dokreslit i mimo (zalepit díru). Alt+klik = kapátko. Vrátit jde nástrojem 🖌 Vrátit.',
+    clone:'Razítko kopíruje kus téhož dílu jinam — ideální na dokreslení chybějící látky nebo kovu se stejnou strukturou. Alt+klik = odkud brát, pak maluj, kam to patří. Křížek ukazuje, odkud se právě bere.',
+    fill:'Klikáním po bodech obkresli tvar, který chybí, a uzavři ho (bílý první bod nebo Enter). Vyplní se zvolenou barvou. Bez „jen na díl“ kreslí i mimo díl. Pak ho Razítkem nebo Malováním dotvoř.',
+    hide:'Přetři na tomto dílu místa, kde má schovat oblečení pod sebou (např. košili, která se boulí zpod brigantiny). Tělo zůstane, ledaže zaškrtneš „i tělo“ — pak zmizí i prsty nebo kůže, co vyčuhují (fialově). Platí jen když postava díl nosí, pro všechny košile a kabátce pod ním. Shift + tah = masku ubrat. Modře je vidět maska.',
+    pick:'Klikni kamkoli na postavu a vezmi barvu. Pak se samo přepne na Malovat.'}[tool];
+  document.getElementById('meshrow').style.display=tool==='mesh'?'':'none';
+  document.getElementById('eraserrow').style.display=['erase','restore','cut','paint','clone','hide'].includes(tool)?'':'none';
+  document.getElementById('hiderow').style.display=tool==='hide'?'':'none';
+  document.getElementById('paintrow').style.display=['paint','pick','fill','clone'].includes(tool)?'':'none';
+  pick[sex]=pick[sex]||{...DEF[sex]};
+  document.getElementById('slots').innerHTML=SLOTS.map(([s,l])=>{const op=options(s,sex);if(!op.length)return'';
+    return '<label class="slot'+(s===active?' on':'')+'"><input type="radio" name="act" value="'+s+'"'+(s===active?' checked':'')+'><span>'+l+'</span><select data-s="'+s+'"><option value="">— nic —</option>'+
+    op.map(f=>'<option'+(f===pick[sex][s]?' selected':'')+' value="'+f+'">'+f.replace(/^(odev|zbroj|plast|vlasy)-(muz|zena)-|^(helma|batoh|vousy|svetlo)-/,'').replace(/-zena$/,' (ž)')+(T[f]&&(changed(t(f))||warped(f))?' ✎':'')+'</option>').join('')+'</select></label>'}).join('');
+  document.querySelectorAll('[name=act]').forEach(r=>r.onchange=()=>{poly=[];msel.clear();active=r.value;save();ui();draw()});
+  document.querySelectorAll('select[data-s]').forEach(s=>s.onchange=()=>{pick[sex][s.dataset.s]=s.value;active=s.dataset.s;save();ui();draw()});
+}
+document.querySelectorAll('[data-sex]').forEach(b=>b.onclick=()=>{sex=b.dataset.sex;save();ui();draw()});
+document.getElementById('zoom').onclick=()=>{Math.abs(VIEW.k-ZOOM.k)<.01&&Math.abs(VIEW.e-ZOOM.e)<1&&Math.abs(VIEW.f-ZOOM.f)<1?setView(1,0,0):setView(ZOOM.k,ZOOM.e,ZOOM.f)};
+document.getElementById('zfull').onclick=()=>setView(1,0,0);
+document.getElementById('ghost').onclick=()=>{ghost=!ghost;ui();draw()};
+const cur=()=>(pick[sex]||{})[active];
+for(const k of ['s','sx','sy','r','tx','ty']){
+  document.getElementById('r_'+k).oninput=e=>{const n=cur();if(n)setT(n,{[k]:+e.target.value})};
+  document.getElementById('n_'+k).onchange=e=>{const n=cur();if(!n)return;const v=+e.target.value;setT(n,{[k]:isNaN(v)?ZERO[k]:v})};
+}
+document.getElementById('flip').onclick=()=>{const n=cur();if(n){setT(n,{f:t(n).f?0:1});ui()}};
+document.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const n=cur();if(!n)return;const [x,y]=b.dataset.n.split(',').map(Number),o=t(n);setT(n,{dx:o.dx+x,dy:o.dy+y})});
+document.getElementById('reset').onclick=()=>{const n=cur();if(n&&confirm(SAVED?'Vrátit tento díl k poslednímu uložení?':'Nic uloženo není — vrátit díl do úplně původního stavu?'))revertPart(n)};
+document.getElementById('resetall').onclick=()=>{if(confirm(SAVED?'Zahodit všechno od posledního uložení?':'Nic uloženo není — vrátit všechny díly do původního stavu?')){T=SAVED?JSON.parse(JSON.stringify(SAVED)):{};for(const k in mcache)delete mcache[k];for(const k in hcache)delete hcache[k];save();ui();draw()}};
+document.getElementById('copy').onclick=async()=>{const v=document.getElementById('out').value;try{await navigator.clipboard.writeText(v);toast('Zkopírováno — vlož to do chatu.')}catch{document.getElementById('out').select();toast('Označeno — zkopíruj Ctrl+C.')}};
+function toast(s){const e=document.getElementById('toast');e.textContent=s;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2200)}
+// tažení myší
+let drag=null;
+const ZOOM={k:2.4,e:512-512*2.4,f:330-200*2.4};
+/** Pohled: přiblížení k a posun e,f (v pixelech plátna). Kolečko přibližuje tam, kam míříš. */
+let VIEW={k:1,e:0,f:0},space=false;
+function setView(k,e,f){k=Math.max(1,Math.min(10,k));VIEW={k,e:Math.min(0,Math.max(1024-1024*k,e)),f:Math.min(0,Math.max(1536-1536*k,f))};zoom=VIEW.k>1.001;
+  const z=document.getElementById('zlab');if(z)z.textContent=zoom?Math.round(VIEW.k*100)+' %':'';ui();draw()}
+function zoomAt(x,y,k){const wx=(x-VIEW.e)/VIEW.k,wy=(y-VIEW.f)/VIEW.k;setView(k,x-wx*k,y-wy*k)}
+const rawPt=e=>{const r=cv.getBoundingClientRect(),q=1024/r.width;return[(e.clientX-r.left)*q,(e.clientY-r.top)*q]};
+/** Myš → souřadnice postavy (bere v úvahu přiblížení hlavy: zvětšení i posun). */
+function pt(e){const [x,y]=rawPt(e);return[(x-VIEW.e)/VIEW.k,(y-VIEW.f)/VIEW.k]}
+let lastPaint=null,shiftDown=false;
+addEventListener('keydown',e=>{if(e.key==='Shift')shiftDown=true});addEventListener('keyup',e=>{if(e.key==='Shift')shiftDown=false});
+let cloneSrc=null,cloneOff=null;
+function paint(n,p,start){if(tool==='clone'){const L=unwarp(n,toLocal(n,p));if(!cloneSrc){alert('Nejdřív Alt+klikni tam, odkud se má kopírovat.');drag=null;return}if(start)cloneOff=[cloneSrc[0]-L[0],cloneSrc[1]-L[1]]}const L=unwarp(n,toLocal(n,p)),o=T[n]=T[n]||{};const A=tool==='hide'?(o.h=o.h||[]):(o.m=o.m||[]);const mode=tool==='restore'||(tool==='hide'&&shiftDown)?1:0,hb=document.getElementById('hidebody').checked?1:0,mk=(x,y)=>tool==='hide'?[x,y,eraser,mode,hb]:tool==='clone'?[x,y,eraser,'c',cloneOff[0],cloneOff[1],pop,psoft?1:0]:tool==='paint'?[x,y,eraser,'p',pcol,pop,patop?1:0,psoft?1:0]:[x,y,eraser,mode];
+  if(!start&&lastPaint){const dx=L[0]-lastPaint[0],dy=L[1]-lastPaint[1],d=Math.hypot(dx,dy),step=Math.max(1,eraser/(tool==='paint'?5:3));
+    for(let k=step;k<d;k+=step)A.push(mk(lastPaint[0]+dx*k/d,lastPaint[1]+dy*k/d))}
+  A.push(mk(L[0],L[1]));lastPaint=L;save();draw()}
+function closePoly(){const n=cur();if(n&&poly.length>=3){const o=T[n]=T[n]||{};o.m=o.m||[];o.m.push(tool==='fill'?{p:poly.map(v=>[v[0],v[1]]),v:'f',c:pcol,o:pop,a:patop?1:0}:{p:poly.map(v=>[v[0],v[1]]),v:0});save()}poly=[];ui();draw()}
+function pickAt(e){const b=cv.getBoundingClientRect(),X=Math.round((e.clientX-b.left)*cv.width/b.width),Y=Math.round((e.clientY-b.top)*cv.height/b.height);
+  const sv=tool;hover=null;tool='move';draw();let d;try{d=cx.getImageData(X,Y,1,1).data}catch(_){alert('Kapátko tu nemůže číst obrázek.');tool=sv;return}tool=sv;
+  if(d[3]<10){draw();return}setCol('#'+[d[0],d[1],d[2]].map(v=>v.toString(16).padStart(2,'0')).join(''));if(tool==='pick'){tool='paint';cv.style.cursor='none'}ui();draw()}
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+addEventListener('keydown',e=>{if(e.code==='Space'&&e.target.tagName!=='INPUT'&&e.target.tagName!=='TEXTAREA'){space=true;cv.style.cursor='grab';e.preventDefault()}if(e.key==='0'&&e.target.tagName!=='INPUT')setView(1,0,0)});
+addEventListener('keyup',e=>{if(e.code==='Space'){space=false;cv.style.cursor=['erase','restore','paint','clone','hide'].includes(tool)?'none':''}});
+cv.addEventListener('pointerdown',e=>{if(e.button===1||e.button===2||space){e.preventDefault();cv.setPointerCapture(e.pointerId);drag={pan:rawPt(e),v:{...VIEW}};return}
+if(tool==='pick'||(tool==='paint'&&e.altKey)){pickAt(e);return}const n=cur();if(!n)return;
+  if(tool==='clone'&&e.altKey){cloneSrc=unwarp(n,toLocal(n,pt(e)));e.preventDefault();draw();return}
+  if((tool==='cut'||tool==='fill')){const V=toLocal(n,pt(e)),L=unwarp(n,V);if(poly.length>=3){const sc=(()=>{cx.save();cx.setTransform(1,0,0,1,0,0);xf(n);const a=Math.abs(cx.getTransform().a);cx.restore();return a*VIEW.k*cv.getBoundingClientRect().width/1024})();
+      const r=14/sc;if(Math.hypot(V[0]-poly[0][2],V[1]-poly[0][3])<r){closePoly();return}}
+    poly.push([L[0],L[1],V[0],V[1]]);draw();return}
+  if(['erase','restore','paint','clone','hide'].includes(tool)){cv.setPointerCapture(e.pointerId);drag={paint:true};paint(n,pt(e),true);return}
+  if(tool==='mesh'&&e.shiftKey){cv.setPointerCapture(e.pointerId);drag={rect:true,a:toLocal(n,pt(e)),b:toLocal(n,pt(e)),moved:false};return}
+  if(tool==='mesh'){const h=nearest(n,pt(e));if(!h){if(msel.size){msel.clear();draw()}return}const G=JSON.parse(JSON.stringify(grid(n)));T[n]={...(T[n]||{}),g:G};cv.setPointerCapture(e.pointerId);cv.classList.add('drag');
+    const hi=h[1]*(G.c+1)+h[0];if(!msel.has(hi))msel=new Set([hi]);drag={mesh:h,anchors:new Set(msel),start:toLocal(n,pt(e)),orig:G.p.map(q=>[...q])};return}
+  cv.setPointerCapture(e.pointerId);cv.classList.add('drag');drag={p:pt(e),o:{...t(n)}}});
+cv.addEventListener('pointermove',e=>{if(drag&&drag.pan){const [x,y]=rawPt(e);setView(drag.v.k,drag.v.e+x-drag.pan[0],drag.v.f+y-drag.pan[1]);return}
+const n=cur();if(!n)return;
+  if((tool==='cut'||tool==='fill')){hover=pt(e);draw();return}
+  if(['erase','restore','paint','clone','hide'].includes(tool)){hover=pt(e);if(drag&&drag.paint){paint(n,hover)}else draw();return}
+  if(!drag){if(tool==='mesh'){const h=nearest(n,pt(e));if(String(h)!==String(hot)){hot=h;draw()}}return}
+  if(drag.rect){drag.b=toLocal(n,pt(e));drag.moved=true;draw();return}
+  if(drag.mesh){const G=T[n].g,L=toLocal(n,pt(e)),dx=L[0]-drag.start[0],dy=L[1]-drag.start[1],[hc,hr]=drag.mesh;
+    for(let r=0;r<=G.r;r++)for(let c=0;c<=G.c;c++){const w=meshW(G,c,r,drag.anchors);if(!w)continue;
+      const i=r*(G.c+1)+c;G.p[i]=[drag.orig[i][0]+dx*w,drag.orig[i][1]+dy*w]}
+    save();draw();return}
+  const p=pt(e);setT(n,{dx:Math.round(drag.o.dx+p[0]-drag.p[0]),dy:Math.round(drag.o.dy+p[1]-drag.p[1])})});
+cv.addEventListener('pointerleave',()=>{hover=null;draw()});
+cv.addEventListener('pointerup',e=>{if(drag&&drag.pan){drag=null;return}
+if(drag&&drag.rect){const n=cur(),G=grid(n);if(!drag.moved){const h=nearest(n,pt(e));if(h){const i=h[1]*(G.c+1)+h[0];msel.has(i)?msel.delete(i):msel.add(i)}}
+    else{const [x0,x1]=[drag.a[0],drag.b[0]].sort((a,b)=>a-b),[y0,y1]=[drag.a[1],drag.b[1]].sort((a,b)=>a-b);for(let r=0;r<=G.r;r++)for(let c=0;c<=G.c;c++){const [x,y]=gp(G,c,r);if(x>=x0&&x<=x1&&y>=y0&&y<=y1)msel.add(r*(G.c+1)+c)}}
+    drag=null;draw();return}
+  drag=null;clearTimeout(snapTimer);snap();cv.classList.remove('drag');ui();draw()});
+cv.addEventListener('wheel',e=>{e.preventDefault();
+  if(!e.altKey&&!e.shiftKey&&!(e.ctrlKey&&tool==='move')){const [x,y]=rawPt(e);zoomAt(x,y,VIEW.k*Math.pow(1.0015,-e.deltaY));return}
+  const n=cur();if(!n)return;
+  if(['erase','restore','paint','clone','hide'].includes(tool)){eraser=Math.max(3,Math.min(200,eraser-Math.sign(e.deltaY)*2));SV('eraser',eraser);document.getElementById('eraser').value=eraser;ev();draw();return}const o=t(n),k=e.shiftKey?'sx':e.ctrlKey?'sy':'s';setT(n,{[k]:Math.round((o[k]-Math.sign(e.deltaY)*0.5)*2)/2})},{passive:false});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&msel.size){msel.clear();draw()}});
+addEventListener('keydown',e=>{const n=cur();if(!n||e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+  if((tool==='cut'||tool==='fill')){if(e.key==='Enter'){e.preventDefault();closePoly();return}if(e.key==='Escape'){poly=[];draw();return}if(e.key==='Backspace'){e.preventDefault();poly.pop();draw();return}}const st=e.shiftKey?10:1,o=t(n);if(e.key==='q'||e.key==='Q'||e.key==='e'||e.key==='E'){setT(n,{r:Math.round((o.r+(/q/i.test(e.key)?-1:1)*(e.shiftKey?2:.5))*2)/2});return}const m={ArrowUp:[0,-st],ArrowDown:[0,st],ArrowLeft:[-st,0],ArrowRight:[st,0]}[e.key];if(m){e.preventDefault();setT(n,{dx:o.dx+m[0],dy:o.dy+m[1]})}});
+document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{if((tool==='cut'||tool==='fill')&&poly.length>=3&&confirm('Uzavřít rozkreslený výřez?'))closePoly();poly=[];tool=b.dataset.tool;hot=null;cv.style.cursor=['erase','restore','paint','clone','hide'].includes(tool)?'none':(tool==='cut'||tool==='fill')||tool==='pick'?'crosshair':'';ui();draw()});
+function setCol(c){pcol=c;SV('pcol',c);document.getElementById('pcol').value=c;document.getElementById('pswatch').textContent=c}
+setCol(pcol);document.getElementById('pcol').oninput=e=>{setCol(e.target.value);draw()};
+const pv=()=>{document.getElementById('popv').textContent=pop+' %'};document.getElementById('pop').value=pop;pv();document.getElementById('pop').oninput=e=>{pop=+e.target.value;SV('pop',pop);pv()};
+document.getElementById('patop').checked=!!patop;document.getElementById('patop').onchange=e=>{patop=e.target.checked?1:0;SV('patop',patop)};
+document.getElementById('psoft').checked=!!psoft;document.getElementById('psoft').onchange=e=>{psoft=e.target.checked?1:0;SV('psoft',psoft)};
+const ev=()=>{document.getElementById('eraserv').textContent=eraser+' px'};document.getElementById('eraser').value=eraser;ev();
+document.getElementById('eraser').oninput=e=>{eraser=+e.target.value;SV('eraser',eraser);ev();draw()};
+document.getElementById('hidereset').onclick=()=>{const n=cur();if(n&&T[n]&&T[n].h&&confirm('Smazat masku schovávání tohoto dílu?')){delete T[n].h;save();ui();draw()}};
+document.getElementById('hideall').onchange=()=>draw();
+document.getElementById('maskreset').onclick=()=>{const n=cur();if(n&&T[n]&&T[n].m&&confirm('Smazat všechno gumování, výřezy a malbu tohoto dílu?')){delete T[n].m;save();ui();draw()}};
+document.getElementById('gdim').value=gridDim;
+document.getElementById('gdim').onchange=e=>{const n=cur();gridDim=e.target.value;SV('grid',gridDim);msel.clear();
+  if(n&&T[n]&&T[n].g){const [c,r]=gridDim.split('x').map(Number);T[n].g=resample(T[n].g,c,r);save()}draw()};
+let SAVED=LS('saved',null),SAVEDAT=LS('savedat','');
+// Nová sada obrázků už má úpravy zapečené: staré nastavení těch dílů by se použilo podruhé → zahodit (jednou za sadu).
+if(window.ZAPECENO&&LS('zapeceno','')!==ZAPECENO.id){for(const d of ZAPECENO.dily){delete T[d];if(SAVED)delete SAVED[d]}SV('T',T);SV('saved',SAVED);SV('zapeceno',ZAPECENO.id)}
+const savedPart=n=>SAVED&&SAVED[n]?JSON.parse(JSON.stringify(SAVED[n])):null;
+const dirty=()=>JSON.stringify(T)!==JSON.stringify(SAVED||{});
+function ckptInfo(){document.getElementById('ckptinfo').textContent=SAVED?'Uloženo '+SAVEDAT+(dirty()?' · máš neuložené změny':' · vše uloženo'):'Zatím neuloženo — „Vrátit“ teď vrací do úplně původního stavu.'}
+function checkpoint(){SAVED=JSON.parse(JSON.stringify(T));const d=new Date();SAVEDAT=d.toLocaleDateString('cs-CZ')+' '+d.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});SV('saved',SAVED);SV('savedat',SAVEDAT);ckptInfo()}
+function revertPart(n,what){const sp=savedPart(n);if(!what){if(sp)T[n]=sp;else delete T[n]}else{T[n]=T[n]||{};if(sp&&sp[what]!==undefined)T[n][what]=sp[what];else delete T[n][what]}for(const k in mcache)delete mcache[k];for(const k in hcache)delete hcache[k];save();ui();draw()}
+const meshReset=()=>{const n=cur();if(n)revertPart(n,'g')};
+document.getElementById('ckpt').onclick=checkpoint;
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();checkpoint()}});
+document.getElementById('tofile').onclick=()=>{checkpoint();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({T,pick,sex,active},null,1)],{type:'application/json'}));const d=new Date();a.download='platno-postavy-'+d.toISOString().slice(0,16).replace(/[:T]/g,'-')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};
+document.getElementById('fromfile').onclick=()=>document.getElementById('filein').click();
+document.getElementById('filein').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(x=>{try{const d=JSON.parse(x);snap();T=d.T||d;if(d.pick)pick=d.pick;if(d.sex)sex=d.sex;if(d.active)active=d.active;for(const k in mcache)delete mcache[k];for(const k in hcache)delete hcache[k];save();checkpoint();ui();draw()}catch(_){alert('Soubor se nepodařilo načíst.')}});e.target.value=''};
+document.getElementById('meshreset2').onclick=meshReset;
+document.getElementById('undo').onclick=undo;document.getElementById('redo').onclick=redo;
+addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&!e.altKey){if(e.key==='z'||e.key==='Z'){e.preventDefault();e.shiftKey?redo():undo()}else if(e.key==='y'||e.key==='Y'){e.preventDefault();redo()}}});
+document.getElementById('meshreset').onclick=meshReset;
+const bv=()=>{document.getElementById('brushv').textContent=['jen bod','malý','střední','velký','velmi velký','obří'][brush]+(BR[brush]?' ('+BR[brush]+' px)':'')};
+document.getElementById('brush').value=brush;bv();
+document.getElementById('brush').oninput=e=>{brush=+e.target.value;SV('brush',brush);bv()};
+if(!SAVED&&Object.keys(T).length)checkpoint();
+ui();draw();ckptInfo();
+</script></body></html>

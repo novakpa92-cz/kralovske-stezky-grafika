@@ -1,0 +1,34 @@
+PLÁTNO POSTAVY – Královské stezky
+=================================
+
+Spuštění: dvojklik na index.html (otevře se v prohlížeči, internet není potřeba).
+
+1. Nahoře zvol Muž / Žena, vyber výbavu a kroužkem díl, který upravuješ.
+2. Nástroje:
+   ✋ Posun  – táhni díl myší. Kolečko = velikost, Shift+kolečko = šířka,
+               Ctrl+kolečko = výška, Q/E = natočení, šipky = posun o 1 px (Shift 10 px).
+   🕸 Síť    – táhni body mřížky: upravíš jen ramena, jen rukávy, jen lem…
+               Měkký štětec pohne i okolními body. Hustota sítě v nabídce.
+   ✂ Výřez   – klikáním po bodech obkresli, co má zmizet; uzavři kliknutím na první
+               (bílý) bod nebo Enterem. Backspace = zpět o bod, Esc = zrušit.
+   🧽 Guma   – přetři, co se nemá ukazovat (např. zadní okraj helmy přes obličej).
+   🖌 Vrátit – přetři smazané místo a vrátí se.
+3. ↶ Zpět = Ctrl+Z, ↷ Znovu = Ctrl+Y. ↺ Obnovit síť vrátí síť dílu do původního tvaru.
+4. Posuvníky: velikost, šířka, výška, natočení; ⇋ Zrcadlit.
+5. 🔍 Hlava = přiblížení, 👻 Jen vybraný díl = ostatní průhledné.
+6. Hotovo: 📋 Zkopírovat nastavení a vlož to do chatu Claudovi.
+
+Všechno se průběžně ukládá v prohlížeči (stejný prohlížeč = stejná rozpracovaná práce).
+
+
+NOVĚ
+- 🎨 Malovat: barva, krytí, „jen na díl“ (přebarví jen to, co tam je), měkký okraj. Alt+klik = kapátko.
+- 💧 Kapátko: klikni na postavu a vezmi barvu, pak se samo přepne na Malovat.
+- Náklon dozadu / Pootočení do strany (posuvníky u Vybraného dílu): díl se nakloní s perspektivou.
+- 💾 Uložit (Ctrl+S): uloží rozpracovanou práci. Všechna tlačítka „Vrátit…“ vrací jen k poslednímu uložení.
+- 📁 Uložit do souboru / 📂 Načíst ze souboru: záloha mimo prohlížeč.
+- Síť: hustota až 24×36, změna hustoty zachová tvar. Shift+tah = výběr víc bodů, Shift+klik = přidat/odebrat bod, Esc = zrušit výběr. Měkký štětec je v pixelech.
+- 🪞 Razítko: Alt+klik = odkud kopírovat, pak maluj, kam to patří (dokreslení látky/kovu stejnou strukturou).
+- 🖍 Obkreslit a vyplnit: po bodech obkresli chybějící tvar, vyplní se barvou (bez „jen na díl“ i mimo díl).
+- Štětec až 200 px.
+- Kolečko = přiblížit tam, kam míříš (až 10×). Posun pohledu: pravé/prostřední tlačítko nebo mezerník + tah. 0 = celá postava. Velikost dílu je teď Alt + kolečko.
