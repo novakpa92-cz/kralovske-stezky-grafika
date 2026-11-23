@@ -106,7 +106,7 @@ if len(_v):                                          # vně rukávu (oděv trč�
     for _e, _d in ((_v.min(), -1), (_v.max(), 1)):
         _q = np.arange(_e, _e - 15 * _d, -_d); _sl = np.polyfit(_q, SB[_q], 1)[0] if len(_q) > 3 else 0
         _xx = np.arange(0, _e) if _d < 0 else np.arange(_e + 1, W)
-        SB[_xx] = np.clip(SB[_e] + 0.8 * np.abs(_xx - _e), SB[_e], SB[_e] + 40).astype(int)   # vně rukávu: hrana šikmo dolů od rohu rukávu
+        SB[_xx] = SB[_e]   # vně rukávu: hrana šikmo dolů od rohu rukávu
 _bsep = next((y for y in range(top + 100, 800) if len([u for u in useky(body[y]) if u[1] < 512 - 60]) >= 1 and len(useky(body[y])) >= 3), top + 190)
 PY = int(min(SB.max(), _bsep + 25))                   # výška podpaží (u dlouhých rukávů ne spodek rukávu)
 # paže: plné rukávy → na paži nic zespodu (až k zápěstí); krátké → jen do konce rukávu
@@ -378,8 +378,15 @@ if ruk == "kratke" and OD and SB.max() >= PY + 40:      # rukáv oděvu pod dlou
         if _ok.sum() < 20: continue
         _ii = np.arange(len(_c)); _c = np.interp(_ii, _ii[_ok], _c[_ok]); _h = np.interp(_ii, _ii[_ok], _h[_ok])
         _c = _gf(_c, 6); _h = _gf(_h, 6)
+        _sc = np.where(A[top:int(SB.max()) + 1].any(0) & (SB >= 0) & ((xs[0] < 512) if _sd < 0 else (xs[0] > 512)) & (np.abs(xs[0] - 512) > 140))[0]
+        _ye = int(np.percentile(SB[_sc], 75)) if len(_sc) else int(SB.max())
+        _ae = [u for u in useky(A[_ye - 12]) if ((u[1] < 512) if _sd < 0 else (u[0] > 512)) and abs((u[0] + u[1]) / 2 - 512) > 120]
+        _ae = (_ae[0] if _sd < 0 else _ae[-1]) if _ae else None
         for _i, _y in enumerate(range(_y0, _y1)):
             _lo, _hi = int(round(_c[_i] - _h[_i] - 9)), int(round(_c[_i] + _h[_i] + 9))
+            if _ae is not None:                         # těsně pod koncem rukávu zbroje látka v plné šíři konce rukávu, pak se zúží na paži
+                _t = np.clip((_y - (_ye - 12)) / 45.0, 0, 1)
+                _lo = int(min(_lo, _ae[0] * (1 - _t) + _lo * _t)); _hi = int(max(_hi, _ae[1] * (1 - _t) + _hi * _t))
             _z = np.zeros(W, bool)
             _z[max(0, _lo - 45):max(0, _lo)] = True; _z[min(W, _hi + 1):min(W, _hi + 46)] = True
             if _sd < 0: _z[512:] = False
