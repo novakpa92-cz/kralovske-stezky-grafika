@@ -15,11 +15,14 @@ m = (ys >= lim[None, :]) & ~Ajad
 rg = (t[..., 0] - t[..., 1]) / np.maximum(t[..., 0], 1)
 cb = np.where(A.any(0), 1535 - np.argmax(A[::-1], axis=0), -1)
 ruce = (t[..., 3] > 60) & (rg >= .19) & (np.abs(xs - 512) > 190) & (ys > 700) & (ys < 1000)   # holé ruce pod rukávy
-for sd in (xs[0] < 512, xs[0] >= 512):                     # holá ruka až pod koncem rukávu (ne kůže vedle něj)
-    zz = A & (np.abs(xs - 512) > 190) & (ys > 600) & (ys < 1000) & sd[None, :]
-    if zz.any():
-        ye = np.where(zz.any(1))[0].max()
-        ruce &= ~((ys < ye - 6) & sd[None, :])
+for sd in (xs[0] < 512 - 190, xs[0] > 512 + 190):       # holá ruka jen pod čarou spodku manžety (přímka proložená spodkem rukávu)
+    zz = A & sd[None, :] & (ys > 600) & (ys < 1000)
+    if not zz.any(): continue
+    cb2 = np.where(zz.any(0), zz.shape[0] - 1 - np.argmax(zz[::-1], axis=0), -1); ye = cb2.max()
+    cx = np.where(sd & (cb2 > ye - 25))[0]
+    p = np.polyfit(cx, cb2[cx], 1) if len(cx) > 5 else np.array([0., ye])
+    cut = np.polyval(p, xs[0]) - 3
+    ruce &= ~(sd[None, :] & (ys <= cut[None, :]))
 MB = m & ~ruce
 def uloz(mm, p):
     a = (mm * 255).astype(np.uint8); Image.fromarray(np.dstack([np.full_like(a, 255)] * 3 + [a]), "RGBA").save(p, "WEBP", lossless=True)

@@ -262,6 +262,8 @@ if SUKNE and OD:                                     # sukně vedle zbroje nad l
             if not (_a <= 512 <= _b): _ruka[_y, max(0, _a - 6):_b + 7] = True
     _z = (np.abs(xs - 512) < 330) & (ys >= 600) & ~A & ~_ruka
     R = np.where(_z, ~_ok, R); RB = np.where(_z & _zona, ~_ok & ~A, RB)
+    _rgs = (t[..., 0] - t[..., 1]) / np.maximum(t[..., 0], 1e-3)   # spodnička těla vedle zúžené sukně (i když leží u paže) taky pryč
+    RB |= (np.abs(xs - 512) < 330) & (ys >= _hl - 60) & ~A & ~_ok & (t[..., 3] > .05) & (_rgs < .19) & (ys < 1100)
     _vz = (_o & ~R & ~cv2.dilate(A.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool)).astype(np.uint8)   # drobné útržky oděvu kolem zbroje pryč
     _c, _lab, _st, _ = cv2.connectedComponentsWithStats(_vz)
     for _i in range(1, _c):
@@ -428,6 +430,16 @@ if SUKNE and OD:                                     # sukně souměrně: od š�
             _hid = _zz & _o7[_y] & ~A[_y]
             if _y > _hr - 60: _hid &= ~_ruka[_y] if _y < _ruka.shape[0] else _hid
             R[_y] |= _hid
+            if _y >= _hr - 60 and _o7[_y, 512 - 150:512 + 150].any():   # spodnička těla vedle zúžené sukně taky pryč (kůže ne)
+                _rgy = (t[_y, :, 0] - t[_y, :, 1]) / np.maximum(t[_y, :, 0], 1e-3)
+                RB[_y] |= _zz & ~A[_y] & (t[_y, :, 3] > .05) & (_rgy < .19)
+        _v8 = (_o7 & ~R & ~A).astype(np.uint8)              # útržky (tenké čárky) oděvu vedle sukně pryč
+        _c8, _lab8, _st8, _ = cv2.connectedComponentsWithStats(_v8)
+        for _i in range(1, _c8):
+            if _st8[_i, cv2.CC_STAT_AREA] < 400: R[_lab8 == _i] = True
+        _v8 = (_o7 & ~R & ~A).astype(np.uint8)              # tenké vlásky trčící z okraje sukně pryč
+        _op8 = cv2.morphologyEx(_v8, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))) > 0
+        R |= (_v8 > 0) & ~_op8 & (np.abs(xs - 512) > 150) & (ys > _hr - 60)
 _pp = Path("nastroje/podpazi") / f"{n}.png"            # okno v podpaží zbroje (mezi rukávem a trupem): je vidět látka pod ní
 if _pp.exists():
     _P = np.array(Image.open(_pp).convert("L")) > 128
