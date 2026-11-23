@@ -162,9 +162,13 @@ if SUKNE and OD:                                     # sukně vedle zbroje nad l
     _ok = np.zeros((H, W), bool)                      # kde smí být sukně vidět
     _tc = [x for x in range(512 - 270, 512 + 270) if colbot[x] > _hl - 60]   # sloupce trupu zbroje (k lemu)
     _xl, _xr = min(_tc), max(_tc)
-    _st0 = colbot.copy(); _st0[:_xl] = colbot[_xl]; _st0[_xr + 1:] = colbot[_xr]   # vedle zbroje začíná sukně až v úrovni rohu lemu
+    _st0 = colbot.copy().astype(float)                   # pod zbrojí hned pod lemem; vedle ní sukně vylézá šikmo z rohu lemu (kužel), žádná polička
+    _bl = int(colbot[_xl:_xl + 25].max()); _br = int(colbot[_xr - 24:_xr + 1].max())
+    _st0[:_xl] = _bl + (_xl - np.arange(_xl)) / 0.9
+    _st0[_xr + 1:] = _br + (np.arange(_xr + 1, W) - _xr) / 0.9
     for _x in range(_xl, _xr + 1):
         if colbot[_x] < _hl - 60: _st0[_x] = colbot[_x]
+    _st0 = _st0.astype(int)
     _ok = (ys > _st0[None, :]) | ((ys >= 600) & ~A & (xs >= _xl) & (xs <= _xr) & (ys > 700) & (np.abs(xs - 512) < 60))   # pod lemem; rozparek
     _v = (_ok & _o).astype(np.uint8)
     _op = cv2.morphologyEx(_v, cv2.MORPH_OPEN, np.ones((1, 9), np.uint8)) > 0
