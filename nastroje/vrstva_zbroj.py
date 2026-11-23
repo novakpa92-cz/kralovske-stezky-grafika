@@ -177,7 +177,7 @@ if SUKNE and OD:                                     # sukně vedle zbroje nad l
         if _y > _yb: _ok[_y] = True; continue
         for lev, _b, _x0, _xe in ((True, _bl, _xl, _sLb), (False, _br, _xr, _sRb)):
             if _y <= _b or _xe is None: continue
-            _t = min(1.0, (_y - _b) / 140); _w = 45 * (1 - (1 - _t) ** 2) + max(0, _y - _b - 140) * 0.1   # jako lněná sukně: rovná, jen mírně širší než zbroj
+            _t = min(1.0, (_y - _b) / 140); _w = 35 * (1 - (1 - _t) ** 2) + max(0, _y - _b - 140) * 0.04   # jako lněná sukně: rovná, jen mírně širší než zbroj
             _tx = _x0 - _w if lev else _x0 + _w
             if lev: _ok[_y, int(round(_tx)):_xl] = True
             else: _ok[_y, _xr + 1:int(round(_tx)) + 1] = True
