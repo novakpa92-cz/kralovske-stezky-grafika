@@ -118,7 +118,7 @@ for y in range(top, min(H, 960)):
             if y <= konec + 3: RT[y, max(0, a - 40):b + 41] = True
         elif ruk == "kratke":
             sl = slice(max(0, a - 40), b + 41)
-            R[y, sl] = y <= SB[sl] + 2                    # po spodní hranu rukávu zbroje v každém sloupci (šikmý konec rukávu)
+            R[y, sl] = y <= SB[sl] + 7                    # po spodní hranu rukávu zbroje v každém sloupci (šikmý konec rukávu)
             RT[y, sl] |= y <= SB[sl] + 2
         else:
             R[y, max(0, a - 18):b + 19] = False          # vesta: rukávy oděvu zůstanou
@@ -136,11 +136,24 @@ if ruk == "kratke":                                    # podpaží: pás u boku 
         if not sg: continue
         l_, r_ = min(u[0] for u in sg), max(u[1] for u in sg)
         pas = np.zeros(W, bool); pas[max(0, l_ - 26):l_] = True; pas[r_ + 1:r_ + 27] = True
+        if SB.max() - 20 < y < 700:                    # pod podpažím: všechno mezi paží (+ tloušťka rukávu) a bokem zbroje pryč
+            _ar = [u for u in useky(body[y]) if not (u[0] <= 512 <= u[1])]
+            _al = [u for u in _ar if u[1] < l_]; _ap = [u for u in _ar if u[0] > r_]
+            if _al: pas[min(l_, max(u[1] for u in _al) + 19):l_] = True
+            if _ap: pas[r_ + 1:max(r_ + 1, min(u[0] for u in _ap) - 18)] = True
         for a_, b_ in useky(body[y]):
             if not (a_ <= 512 <= b_): pas[max(0, a_ - 6):b_ + 7] = False
         _kz = (t[y, :, 3] > .3) & ((t[y, :, 0] - t[y, :, 1]) / np.maximum(t[y, :, 0], 1e-3) >= .19)   # kůže paže → rukáv oděvu tam zůstává
         pas &= ~(cv2.dilate(_kz.astype(np.uint8)[None, :], np.ones((1, 13), np.uint8))[0] > 0)
         R[y] |= pas
+if ruk == "kratke":                                    # podpaží (mezi rukávem a bokem zbroje) až po spodek rukávu: nic zespodu
+    _sg = [u for u in useky(A[min(H - 1, int(SB.max()) + 15)]) if abs((u[0] + u[1]) / 2 - 512) < 200]
+    if _sg:
+        _tl, _tr = min(u[0] for u in _sg), max(u[1] for u in _sg)
+        _xx = np.arange(W)
+        _vl = int(SB[(_xx < _tl) & (np.abs(_xx - 512) > 120)].max()); _vr = int(SB[(_xx > _tr) & (np.abs(_xx - 512) > 120)].max())
+        for _x in range(max(0, _tl - 70), _tl): R[top + 60:_vl + 3, _x] |= ~A[top + 60:_vl + 3, _x]; RT[top + 60:_vl + 3, _x] |= ~A[top + 60:_vl + 3, _x]
+        for _x in range(_tr + 1, min(W, _tr + 71)): R[top + 60:_vr + 3, _x] |= ~A[top + 60:_vr + 3, _x]; RT[top + 60:_vr + 3, _x] |= ~A[top + 60:_vr + 3, _x]
 # průkrčník: v otvoru zbroje u krku se límec oděvu smí ukázat
 for y in range(top - 30, top + 90):
     row = np.where(A[y])[0]
