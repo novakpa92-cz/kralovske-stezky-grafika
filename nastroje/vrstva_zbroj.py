@@ -369,7 +369,7 @@ if ruk == "kratke":                                    # oděv vyčuhující nad
 if ruk == "kratke" and OD and SB.max() >= PY + 40:      # rukáv oděvu pod dlouhým rukávem zbroje: jen trubka podél paže (osa i šířka podle paže), stejně na obou stranách
     from scipy.ndimage import gaussian_filter1d as _gf
     for _sd in (-1, 1):
-        _y0 = int(SB.max()) - 80; _y1 = min(H - 1, int(SB.max()) + 200)
+        _y0 = int(SB.max()) - 80; _y1 = min(H - 1, int(SB.max()) + 85)
         _c = np.full(_y1 - _y0, np.nan); _h = np.full(_y1 - _y0, np.nan)
         for _i, _y in enumerate(range(_y0, _y1)):
             _a = [u for u in useky(body[_y]) if not (u[0] <= 512 <= u[1]) and ((u[1] < 512) if _sd < 0 else (u[0] > 512)) and abs((u[0] + u[1]) / 2 - 512) > 120]
@@ -381,7 +381,7 @@ if ruk == "kratke" and OD and SB.max() >= PY + 40:      # rukáv oděvu pod dlou
         for _i, _y in enumerate(range(_y0, _y1)):
             _lo, _hi = int(round(_c[_i] - _h[_i] - 9)), int(round(_c[_i] + _h[_i] + 9))
             _z = np.zeros(W, bool)
-            _z[max(0, _lo - 100):max(0, _lo)] = True; _z[min(W, _hi + 1):min(W, _hi + 101)] = True
+            _z[max(0, _lo - 45):max(0, _lo)] = True; _z[min(W, _hi + 1):min(W, _hi + 46)] = True
             if _sd < 0: _z[512:] = False
             else: _z[:512] = False
             _z &= np.abs(xs[0] - 512) > 140
