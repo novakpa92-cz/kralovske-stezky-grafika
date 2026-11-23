@@ -118,7 +118,7 @@ for y in range(top, min(H, 960)):
             if y <= konec + 3: RT[y, max(0, a - 40):b + 41] = True
         elif ruk == "kratke":
             sl = slice(max(0, a - 40), b + 41)
-            R[y, sl] = y <= SB[sl] + 7                    # po spodní hranu rukávu zbroje v každém sloupci (šikmý konec rukávu)
+            R[y, sl] = y <= SB[sl] + 2                    # po spodní hranu rukávu zbroje v každém sloupci (šikmý konec rukávu)
             RT[y, sl] |= y <= SB[sl] + 2
         else:
             R[y, max(0, a - 18):b + 19] = False          # vesta: rukávy oděvu zůstanou
@@ -130,30 +130,44 @@ if ruk == "kratke":                                    # pod krátkým rukávem:
         pod = y > SB + 2
         L = np.arange(W) < l_ - 10; P = np.arange(W) > r_ + 10
         R[y, (L | P) & pod] = False; RT[y, (L | P) & pod] = False
+_OV = (np.array(Image.open(D / f"odev-{OD}.webp").convert("RGBA"))[..., 3] > 100) if OD else None
 if ruk == "kratke":                                    # podpaží: pás u boku zbroje (mimo samotnou paži) schovat – žádné světlé cípy pod rukou
     for y in range(top, int(hem.max())):
         sg = [u for u in useky(A[y]) if abs((u[0] + u[1]) / 2 - 512) < 200]
         if not sg: continue
         l_, r_ = min(u[0] for u in sg), max(u[1] for u in sg)
-        pas = np.zeros(W, bool); pas[max(0, l_ - 26):l_] = True; pas[r_ + 1:r_ + 27] = True
+        _pod = y > SB + 2                                 # pod rukávem zbroje je paže s rukávem oděvu vidět (i kde v siluetě splývá s bokem)
+        _pod[l_:r_ + 1] = False
+        if y >= 700:                                    # níž jen samotná paže (vedle peplu zbroje nic)
+            _pa = np.zeros(W, bool)
+            for a_, b_ in useky(body[y]):
+                if not (a_ <= 512 <= b_): _pa[max(0, a_ - 40):b_ + 41] = True
+            _pod &= _pa
+        R[y, _pod] = False; RT[y, _pod] = False
+        pas = np.zeros(W, bool)
+        if y > SB.max() + 4: pas[max(0, l_ - 26):l_] = True; pas[r_ + 1:r_ + 27] = True   # v podpaží (mezi rukávem a trupem zbroje) látka zůstává
         if SB.max() - 20 < y < 700:                    # pod podpažím: všechno mezi paží (+ tloušťka rukávu) a bokem zbroje pryč
             _ar = [u for u in useky(body[y]) if not (u[0] <= 512 <= u[1])]
             _al = [u for u in _ar if u[1] < l_]; _ap = [u for u in _ar if u[0] > r_]
-            if _al: pas[min(l_, max(u[1] for u in _al) + 19):l_] = True
-            if _ap: pas[r_ + 1:max(r_ + 1, min(u[0] for u in _ap) - 18)] = True
+            if _al:                                    # rukáv oděvu (souvislý kus přes paži) zůstává celý, zbytek u boku pryč
+                _e = max(u[1] for u in _al); _k = _e
+                if _OV is not None:
+                    while _k + 1 < l_ and _OV[y, _k + 1]: _k += 1
+                    if _k + 1 >= l_: _k = _e + 30           # rukáv splývá s živůtkem až k boku → rukáv bereme do 30 px za paží
+                else: _k = _e + 19
+                pas[min(l_, _k + 1):l_] = True
+            if _ap:
+                _e = min(u[0] for u in _ap); _k = _e
+                if _OV is not None:
+                    while _k - 1 > r_ and _OV[y, _k - 1]: _k -= 1
+                    if _k - 1 <= r_: _k = _e - 30
+                else: _k = _e - 18
+                pas[r_ + 1:max(r_ + 1, _k)] = True
         for a_, b_ in useky(body[y]):
             if not (a_ <= 512 <= b_): pas[max(0, a_ - 6):b_ + 7] = False
         _kz = (t[y, :, 3] > .3) & ((t[y, :, 0] - t[y, :, 1]) / np.maximum(t[y, :, 0], 1e-3) >= .19)   # kůže paže → rukáv oděvu tam zůstává
         pas &= ~(cv2.dilate(_kz.astype(np.uint8)[None, :], np.ones((1, 13), np.uint8))[0] > 0)
         R[y] |= pas
-if ruk == "kratke":                                    # podpaží (mezi rukávem a bokem zbroje) až po spodek rukávu: nic zespodu
-    _sg = [u for u in useky(A[min(H - 1, int(SB.max()) + 15)]) if abs((u[0] + u[1]) / 2 - 512) < 200]
-    if _sg:
-        _tl, _tr = min(u[0] for u in _sg), max(u[1] for u in _sg)
-        _xx = np.arange(W)
-        _vl = int(SB[(_xx < _tl) & (np.abs(_xx - 512) > 120)].max()); _vr = int(SB[(_xx > _tr) & (np.abs(_xx - 512) > 120)].max())
-        for _x in range(max(0, _tl - 70), _tl): R[top + 60:_vl + 3, _x] |= ~A[top + 60:_vl + 3, _x]; RT[top + 60:_vl + 3, _x] |= ~A[top + 60:_vl + 3, _x]
-        for _x in range(_tr + 1, min(W, _tr + 71)): R[top + 60:_vr + 3, _x] |= ~A[top + 60:_vr + 3, _x]; RT[top + 60:_vr + 3, _x] |= ~A[top + 60:_vr + 3, _x]
 # průkrčník: v otvoru zbroje u krku se límec oděvu smí ukázat
 for y in range(top - 30, top + 90):
     row = np.where(A[y])[0]
@@ -299,6 +313,34 @@ if ruk == "kratke" and OD:                             # rukáv oděvu pod krát
             _lim = np.polyval(_f, _y) + _off + (-_w if _sd < 0 else _w)
             if _sd < 0: R[_y, :max(0, int(_lim))] |= _ov[_y, :max(0, int(_lim))]
             else: R[_y, int(_lim) + 1:] |= _ov[_y, int(_lim) + 1:]
+if ruk == "kratke" and OD:                             # kde zůstává vidět kůže paže, musí na ní zůstat i látka oděvu; kde je vidět jen prádlo, pryč obojí
+    _o2 = np.array(Image.open(D / f"odev-{OD}.webp").convert("RGBA"))[..., 3] > 100
+    _rg2 = (t[..., 0] - t[..., 1]) / np.maximum(t[..., 0], 1e-3)
+    _vis = (t[..., 3] > .3) & ~RB & ~A & (ys > top + 60) & (ys < 760) & (np.abs(xs - 512) > 60)
+    _sk = (_vis & (_rg2 >= .19)).astype(np.uint8)          # kůže jen té paže, která pokračuje dolů (předloktí), ne útržky u boku
+    _c, _lab, _st3, _ = cv2.connectedComponentsWithStats(_sk)
+    _arm = np.isin(_lab, [i for i in range(1, _c) if _st3[i, cv2.CC_STAT_TOP] + _st3[i, cv2.CC_STAT_HEIGHT] > SB.max() + 120])
+    _bok = np.zeros((H, W), bool)                         # kůže těsně u boku zbroje (podpaží, bok) – to není paže, pryč
+    for y in range(top, 760):
+        sg = [u for u in useky(A[y]) if abs((u[0] + u[1]) / 2 - 512) < 200]
+        if sg: _bok[y, max(0, min(u[0] for u in sg) - 24):min(u[0] for u in sg)] = True; _bok[y, max(u[1] for u in sg) + 1:max(u[1] for u in sg) + 25] = True
+    _arm &= ~(_bok & ~_o2)
+    R &= ~(_arm & _o2)
+    RB |= _vis & ~_arm & R
+    RB |= _vis & _bok & ~_o2
+    RB |= _vis & _bok & R
+if OD:                                                 # útržky oděvu u boku zbroje pod paží (ne rukáv, ne podpažní okno) pryč
+    _o3 = np.array(Image.open(D / f"odev-{OD}.webp").convert("RGBA"))[..., 3] > 100
+    _v3 = (_o3 & ~R & ~A & (ys > SB.max() + 4) & (ys < 760)).astype(np.uint8)
+    _c, _lab, _st4, _ = cv2.connectedComponentsWithStats(_v3)
+    for _i in range(1, _c):
+        if _st4[_i, cv2.CC_STAT_AREA] < 2500 and 60 < abs(_st4[_i, cv2.CC_STAT_LEFT] + _st4[_i, cv2.CC_STAT_WIDTH] / 2 - 512) < 190:
+            R[_lab == _i] = True; RB[(_lab == _i) & ~A] = True
+_pp = Path("nastroje/podpazi") / f"{n}.png"            # okno v podpaží zbroje (mezi rukávem a trupem): je vidět látka pod ní
+if _pp.exists():
+    _P = np.array(Image.open(_pp).convert("L")) > 128
+    _P = cv2.dilate(_P.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
+    R &= ~_P; RB &= ~_P
 jm = f"{n}__{OD}" if OD else n
 uloz(R, D / f"{jm}-skryva.webp"); uloz(RB, D / f"{jm}-skryva-telo.webp")
 j = json.load(open(D / "skryva.json"))
