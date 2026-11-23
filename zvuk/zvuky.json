@@ -1,0 +1,212 @@
+{
+ "hostinec-hlasy": {
+  "freesound": 326313,
+  "url": "https://freesound.org/s/326313/",
+  "licence": "CC0"
+ },
+ "hostinec-hostina": {
+  "freesound": 856541,
+  "url": "https://freesound.org/s/856541/",
+  "licence": "CC0"
+ },
+ "mesto-vesnice": {
+  "freesound": 578072,
+  "url": "https://freesound.org/s/578072/",
+  "licence": "CC0"
+ },
+ "trh-1": {
+  "freesound": 424790,
+  "url": "https://freesound.org/s/424790/",
+  "licence": "CC0"
+ },
+ "trh-slavnost": {
+  "freesound": 703642,
+  "url": "https://freesound.org/s/703642/",
+  "licence": "CC0"
+ },
+ "kostel-uvnitr": {
+  "freesound": 81732,
+  "url": "https://freesound.org/s/81732/",
+  "licence": "CC0"
+ },
+ "kostel-katedrala": {
+  "freesound": 841923,
+  "url": "https://freesound.org/s/841923/",
+  "licence": "CC0"
+ },
+ "zvon-1": {
+  "freesound": 76405,
+  "url": "https://freesound.org/s/76405/",
+  "licence": "CC0"
+ },
+ "zvon-2": {
+  "freesound": 341866,
+  "url": "https://freesound.org/s/341866/",
+  "licence": "CC0"
+ },
+ "kovarna": {
+  "freesound": 254371,
+  "url": "https://freesound.org/s/254371/",
+  "licence": "CC0"
+ },
+ "kovadlina": {
+  "freesound": 386129,
+  "url": "https://freesound.org/s/386129/",
+  "licence": "CC0"
+ },
+ "krb-1": {
+  "freesound": 444920,
+  "url": "https://freesound.org/s/444920/",
+  "licence": "CC0"
+ },
+ "krb-2": {
+  "freesound": 346321,
+  "url": "https://freesound.org/s/346321/",
+  "licence": "CC0"
+ },
+ "dest-uvnitr": {
+  "freesound": 242889,
+  "url": "https://freesound.org/s/242889/",
+  "licence": "CC0"
+ },
+ "dest-venku": {
+  "freesound": 177479,
+  "url": "https://freesound.org/s/177479/",
+  "licence": "CC0"
+ },
+ "hrom-1": {
+  "freesound": 244053,
+  "url": "https://freesound.org/s/244053/",
+  "licence": "CC0"
+ },
+ "bourka": {
+  "freesound": 237729,
+  "url": "https://freesound.org/s/237729/",
+  "licence": "CC0"
+ },
+ "vitr-stromy": {
+  "freesound": 444921,
+  "url": "https://freesound.org/s/444921/",
+  "licence": "CC0"
+ },
+ "les-ptaci-1": {
+  "freesound": 474342,
+  "url": "https://freesound.org/s/474342/",
+  "licence": "CC0"
+ },
+ "les-ptaci-2": {
+  "freesound": 462136,
+  "url": "https://freesound.org/s/462136/",
+  "licence": "CC0"
+ },
+ "noc-cvrcci": {
+  "freesound": 522299,
+  "url": "https://freesound.org/s/522299/",
+  "licence": "CC0"
+ },
+ "kalisek-1": {
+  "freesound": 185985,
+  "url": "https://freesound.org/s/185985/",
+  "licence": "CC0"
+ },
+ "kalisek-2": {
+  "freesound": 466141,
+  "url": "https://freesound.org/s/466141/",
+  "licence": "CC0"
+ },
+ "kostky-stul-1": {
+  "freesound": 558204,
+  "url": "https://freesound.org/s/558204/",
+  "licence": "CC0"
+ },
+ "kostky-stul-2": {
+  "freesound": 485949,
+  "url": "https://freesound.org/s/485949/",
+  "licence": "CC0"
+ },
+ "karta-1": {
+  "freesound": 571577,
+  "url": "https://freesound.org/s/571577/",
+  "licence": "CC0"
+ },
+ "karta-2": {
+  "freesound": 787405,
+  "url": "https://freesound.org/s/787405/",
+  "licence": "CC0"
+ },
+ "karty-michani": {
+  "freesound": 202544,
+  "url": "https://freesound.org/s/202544/",
+  "licence": "CC0"
+ },
+ "mince-1": {
+  "freesound": 223341,
+  "url": "https://freesound.org/s/223341/",
+  "licence": "CC0"
+ },
+ "mince-2": {
+  "freesound": 336480,
+  "url": "https://freesound.org/s/336480/",
+  "licence": "CC0"
+ },
+ "sipky-1": {
+  "freesound": 62455,
+  "url": "https://freesound.org/s/62455/",
+  "licence": "CC0"
+ },
+ "sipky-2": {
+  "freesound": 792080,
+  "url": "https://freesound.org/s/792080/",
+  "licence": "CC0"
+ },
+ "sip-drevo": {
+  "freesound": 534956,
+  "url": "https://freesound.org/s/534956/",
+  "licence": "CC0"
+ },
+ "mec-svih-1": {
+  "freesound": 840716,
+  "url": "https://freesound.org/s/840716/",
+  "licence": "CC0"
+ },
+ "mec-svih-2": {
+  "freesound": 840717,
+  "url": "https://freesound.org/s/840717/",
+  "licence": "CC0"
+ },
+ "mec-stret-1": {
+  "freesound": 364531,
+  "url": "https://freesound.org/s/364531/",
+  "licence": "CC0"
+ },
+ "mec-stret-2": {
+  "freesound": 326868,
+  "url": "https://freesound.org/s/326868/",
+  "licence": "CC0"
+ },
+ "stit": {
+  "freesound": 138489,
+  "url": "https://freesound.org/s/138489/",
+  "licence": "CC0"
+ },
+ "mec-stit": {
+  "freesound": 588278,
+  "url": "https://freesound.org/s/588278/",
+  "licence": "CC0"
+ },
+ "voda": {
+  "freesound": 50623,
+  "url": "https://freesound.org/s/50623/",
+  "licence": "CC0"
+ },
+ "dvere": {
+  "freesound": 125957,
+  "url": "https://freesound.org/s/125957/",
+  "licence": "CC0"
+ },
+ "kun-vuz": {
+  "freesound": 538438,
+  "url": "https://freesound.org/s/538438/",
+  "licence": "CC0"
+ }
+}
