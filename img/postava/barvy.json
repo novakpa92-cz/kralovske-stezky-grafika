@@ -71,6 +71,21 @@
   },
   "plast-muz-vlneny-s-kapi": {
    "latka": 0.283
+  },
+  "plast-zena-cestovni": {
+   "latka": 0.255
+  },
+  "plast-zena-lehky": {
+   "latka": 0.388
+  },
+  "plast-zena-vlneny-s-kapi": {
+   "latka": 0.283
+  },
+  "nohy-zena-lnena-kosilka": {
+   "nohavice": 0.182
+  },
+  "nohy-zena-bez": {
+   "nohavice": 0.182
   }
  }
 }
