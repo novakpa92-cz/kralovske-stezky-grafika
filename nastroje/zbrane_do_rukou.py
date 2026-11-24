@@ -107,7 +107,7 @@ for sx in ("muz", "zena"):
             gy = .93; out = poloz(n, H, (stred_x(im, gy), gy), (P["x"], P["y"]), 180)
         uloz(out, f"zbran-ruka-{z}-{sx}")
     for s_, cm in STITY.items():
-        H = cm * PX; out = poloz(s_, H, (.5, .45), (Lv["x"] + 8, Lv["y"] - 30), 0); uloz(out, f"stit-ruka-{s_[5:]}-{sx}")
+        H = cm * PX; out = poloz(s_, H, (.5, .45), (Lv["x"] - 95, Lv["y"] - 60), 0); uloz(out, f"stit-ruka-{s_[5:]}-{sx}")   # štít před tělem na levém předloktí
     out = poloz("svetlo-louc", 55 * PX, (stred_x(obsah("svetlo-louc"), .62), .62), (Lv["x"], Lv["y"]), 0); uloz(out, f"svetlo-louc-ruka-{sx}")
 json.dump(info, open(POS / "ruce.json", "w"), indent=1)
 j = json.load(open(POS / "skryva.json"))
