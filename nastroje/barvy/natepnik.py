@@ -27,10 +27,11 @@ for i in velke[1:3]:
         if len(row)<2: continue
         l,r=row.min(),row.max()
         arm=np.nonzero(ruk[y])[0]
-        arm=arm[np.abs(arm-cx)<70]
+        arm=arm[np.abs(arm-cx)<95]
         if len(arm)<4: continue
         # souvislý úsek ruky nejblíž nátepníku
-        L,R=arm.min()-2,arm.max()+2
+        L,R=arm.min()-3,arm.max()+6 if cx<512 else arm.max()+3
+        if cx>=512: L=arm.min()-6
         if R-L<r-l: L,R=l,r
         xs_t=np.arange(L,R+1)
         xs_s=np.clip(np.round(l+(xs_t-L)*(r-l)/max(1,R-L)).astype(int),0,1023)
