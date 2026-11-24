@@ -13,6 +13,11 @@ ys=cy+(yy-cy)/ky                                 # svislé zmenšení kolem čel
 t=np.clip((ys-y0)/(y1-y0),0,1); k=k_top+(k_bot-k_top)*t
 xs=cx+(xx-cx)/k
 out=np.dstack([ndimage.map_coordinates(im[...,c],[ys,xs],order=1,mode='constant',cval=0) for c in range(4)])
+# r27-6: tvar podle Pavlova náčrtu — vlasy přiléhají k hlavě a končí u ramen
+from PIL import ImageDraw, ImageFilter
+POLY=[(452,128),(512,118),(572,128),(612,166),(624,235),(614,315),(602,388),(588,412),(436,412),(422,388),(410,315),(400,235),(412,166)]
+m=Image.new('L',(W,H),0); ImageDraw.Draw(m).polygon(POLY,fill=255); m=np.asarray(m.filter(ImageFilter.GaussianBlur(5))).astype(float)/255
+out[...,3]*=m
 telo=np.asarray(Image.open(P+'postava-telo-zena.webp').convert('RGBA')).astype(float)
 hair=np.load('/tmp/postava-telo-zena-vlasy.npy')
 lab,nl=ndimage.label(hair); sz=ndimage.sum(hair,lab,range(1,nl+1)); hair=lab==(np.argmax(sz)+1)
