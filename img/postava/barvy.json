@@ -1,0 +1,76 @@
+{
+ "pozn": "r27-6 barvení oděvů: maska <vrstva>-barva.webp (R = látka, G = nohavice), jas = medián jasu látky, paleta = dobová barviva",
+ "paleta": {
+  "morena": [
+   "Mořena (červená)",
+   "#7a2f24"
+  ],
+  "sarlat": [
+   "Šarlat z červce",
+   "#94261f"
+  ],
+  "boryt": [
+   "Boryt (modrá)",
+   "#3b4f68"
+  ],
+  "rezeda": [
+   "Rezeda (žlutá)",
+   "#a08944"
+  ],
+  "zelena": [
+   "Zelená (boryt a rezeda)",
+   "#4b5b36"
+  ],
+  "hneda": [
+   "Hnědá (ořešák)",
+   "#5a4330"
+  ],
+  "cerna": [
+   "Černá (duběnky)",
+   "#2a2724"
+  ],
+  "seda": [
+   "Šedá (přírodní vlna)",
+   "#716d64"
+  ],
+  "fialova": [
+   "Fialová (mořena a boryt)",
+   "#503242"
+  ]
+ },
+ "vrstvy": {
+  "odev-muz-lnena-kosile": {
+   "latka": 0.613,
+   "nohavice": 0.31
+  },
+  "odev-muz-suknice": {
+   "latka": 0.289,
+   "nohavice": 0.296
+  },
+  "odev-muz-vlneny-kabatec": {
+   "latka": 0.228,
+   "nohavice": 0.177
+  },
+  "odev-zena-lnena-kosilka": {
+   "latka": 0.657
+  },
+  "odev-zena-saty": {
+   "latka": 0.302
+  },
+  "odev-zena-vlnene-saty": {
+   "latka": 0.183
+  },
+  "odev-zena-kozisek": {
+   "latka": 0.278
+  },
+  "plast-muz-cestovni": {
+   "latka": 0.252
+  },
+  "plast-muz-lehky": {
+   "latka": 0.387
+  },
+  "plast-muz-vlneny-s-kapi": {
+   "latka": 0.283
+  }
+ }
+}
