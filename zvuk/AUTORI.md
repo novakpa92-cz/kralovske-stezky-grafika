@@ -28,3 +28,6 @@ Upraveno: sjednocená hlasitost (-18 LUFS), MP3 96 kb/s.
 
 ## Zvuky (složka `prostredi/` a `efekty/`)
 Nahrávky z freesound.org s licencí CC0 (volné dílo). Seznam s čísly zvuků je v `zvuky.json`.
+
+
+Další efekty (r27-41, sázky v hostinci): Meta Open Sound / Oculus Audio Pack (CC0), Kenney Impact Sounds (CC0) a kohoutí kokrhání ze SoundBible.com (Public Domain). Podrobnosti jsou v `zvuky.json`.

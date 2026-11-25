@@ -263,5 +263,90 @@
   "freesound": 59245,
   "url": "https://freesound.org/s/59245/",
   "licence": "CC0"
+ },
+ "kohout-kdakani": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "BIRDFowl_Chicken_OS_01",
+  "licence": "CC0"
+ },
+ "pest-1": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "FGHTImpt_PunchRegular_OS_01",
+  "licence": "CC0"
+ },
+ "pest-2": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "FGHTImpt_PunchRegular_OS_03",
+  "licence": "CC0"
+ },
+ "pest-3": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "FGHTImpt_PunchRegular_OS_02",
+  "licence": "CC0"
+ },
+ "pest-tvrda-1": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "FGHTImpt_PunchHarder_OS_01",
+  "licence": "CC0"
+ },
+ "pest-tvrda-2": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "FGHTImpt_PunchHardest_OS_01",
+  "licence": "CC0"
+ },
+ "bolest-1": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "VOXMale_Male01Hurt_OS_01",
+  "licence": "CC0"
+ },
+ "bolest-2": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "VOXMale_Male02Hurt_OS_02",
+  "licence": "CC0"
+ },
+ "zaber-1": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "VOXEfrt_Male01Effort_OS_01",
+  "licence": "CC0"
+ },
+ "zaber-2": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "VOXEfrt_Male02Effort_OS_01",
+  "licence": "CC0"
+ },
+ "rihnuti-1": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "HMNBurp_Burp_OS_01",
+  "licence": "CC0"
+ },
+ "rihnuti-2": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "HMNBurp_Burp_OS_02",
+  "licence": "CC0"
+ },
+ "smich-1": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "VOXLaff_Male01Laugh_OS_01",
+  "licence": "CC0"
+ },
+ "smich-2": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "VOXLaff_Male02Laugh_OS_01",
+  "licence": "CC0"
+ },
+ "nalevani": {
+  "zdroj": "https://github.com/facebookincubator/Meta-open-sound (Oculus Audio Pack)",
+  "soubor": "WATRPlmb_FaucetWaterRun_LOOP_01 (zkráceno)",
+  "licence": "CC0"
+ },
+ "pest-4": {
+  "zdroj": "Kenney Impact Sounds (kenney.nl)",
+  "soubor": "impact_punch_heavy_000",
+  "licence": "CC0"
+ },
+ "kohout-kokrhani": {
+  "zdroj": "SoundBible.com — Rooster Crow (Mike Koenig)",
+  "url": "https://soundbible.com/1218-Rooster-Crow.html",
+  "licence": "Public Domain"
  }
 }
