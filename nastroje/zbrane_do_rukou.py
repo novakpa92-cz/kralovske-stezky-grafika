@@ -24,9 +24,13 @@ ZBRANE = {
   "halapartna": ("stoji", 195), "kopi": ("stoji", 215), "sudlice": ("stoji", 205), "vidle": ("stoji", 165), "kosa": ("stoji", 165),
   "cep": ("stoji", 150), "obourucni-sekera": ("stoji", 120), "obourucni-kladivo": ("stoji", 120),
   "dlouhy-luk": ("luk", 180), "kratky-luk": ("luk", 120), "kompozitni-luk": ("luk", 110),
+  # 1.0-1-6
+  "rondel": ("visi", 45), "lovecky-tesak": ("visi", 70), "jezdecky-mec": ("visi", 95), "remdih": ("visi", 75), "bojova-sekera": ("visi", 70),
+  "cakan": ("visi", 75), "rytirsky-mec": ("visi", 110), "kropac": ("stoji", 140), "partyzana": ("stoji", 205), "dvourucni-cakan": ("stoji", 175),
+  "valecny-luk": ("luk", 185), "kuse-s-heverem": ("kuse", 95),
   "lehka-kuse": ("kuse", 78), "tezka-kuse": ("kuse", 92), "arbalest": ("kuse", 88), "hakovnice": ("kuse", 100), "pistala": ("kuse", 62),
 }
-STITY = {"stit-lehky-dreveny": 58, "stit-okovany": 66, "stit-paveza": 100, "stit-rytirsky": 70, "stit-tezky-dreveny": 66}
+STITY = {"stit-pestni": 34, "stit-jezdecky": 64, "stit-malovana-paveza": 105, "stit-mistrovsky": 72, "stit-lehky-dreveny": 58, "stit-okovany": 66, "stit-paveza": 100, "stit-rytirsky": 70, "stit-tezky-dreveny": 66}
 
 def uloz(img, name):
     img.save(POS / f"{name}.webp", "WEBP", quality=90)
