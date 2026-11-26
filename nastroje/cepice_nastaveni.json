@@ -34667,5 +34667,19 @@
     1
    ]
   ]
+ },
+ "muz|mekka-cepice-s-perem": {
+  "dx": -7,
+  "dy": 16,
+  "s": 1.702,
+  "r": 0,
+  "schovat": []
+ },
+ "zena|mekka-cepice-s-perem": {
+  "dx": 0,
+  "dy": 0,
+  "s": 1.558,
+  "r": 0,
+  "schovat": []
  }
 }
