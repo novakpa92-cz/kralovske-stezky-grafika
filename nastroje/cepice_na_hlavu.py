@@ -13,6 +13,28 @@ P = R.parent / "postava"
 CELO = {"muz": 178, "zena": 178}       # řádek, kam sedne spodní okraj čepice (nad obočím, přes vlasy u čela)
 
 
+def bez_stinu(im):
+    """Šedý stín z podložky: odstraní nízce sytné šedé pixely navázané na okraj (zvenku), peří a látka zůstanou."""
+    from scipy import ndimage
+    a = np.array(im).astype(np.float32)
+    f = a[..., :3] / 255; mx, mn = f.max(axis=2), f.min(axis=2)
+    sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-3), 0)
+    stin = (a[..., 3] > 0) & (sat < 0.24) & (mx > 0.08) & (mx < 0.93)
+    venku = a[..., 3] < 30
+    pryc = np.zeros_like(venku)
+    hranice = venku.copy()
+    for _ in range(60):                                  # šíření od okraje jen přes stín
+        nove = ndimage.binary_dilation(hranice, iterations=1) & stin & ~pryc
+        if not nove.any():
+            break
+        pryc |= nove; hranice = nove
+    pryc = ndimage.binary_dilation(pryc, iterations=1) & (stin | (a[..., 3] < 200))
+    a[..., 3] = np.where(pryc, 0, a[..., 3])
+    a[..., 3] = np.where(ndimage.binary_erosion(a[..., 3] > 30, iterations=1), a[..., 3], 0)   # o pixel užší okraj
+    out = Image.fromarray(a.astype(np.uint8), "RGBA")
+    return out.crop(out.getchannel("A").point(lambda v: 255 if v > 30 else 0).getbbox())
+
+
 def uloz(im, name):
     im.save(P / f"{name}.webp", "WEBP", quality=90)
     im.resize((512, 768), Image.LANCZOS).save(P / f"{name}-m.webp", "WEBP", quality=88)
@@ -37,7 +59,7 @@ def main():
     opt = sys.argv[4:]
     prah = next((int(o[5:]) for o in opt if o.startswith("prah=")), 205)
     dolu = next((int(o[5:]) for o in opt if o.startswith("dolu=")), 0)
-    cap = vyrez(src, prah)
+    cap = bez_stinu(vyrez(src, prah))
     for sx in (("zena",) if "jen_zena" in opt else ("muz", "zena")):
         x0, x1 = lebka(sx)
         s = (x1 - x0) * k / cap.size[0]
