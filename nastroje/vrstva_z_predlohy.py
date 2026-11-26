@@ -36,6 +36,13 @@ def main():
     bila = ndimage.binary_dilation(bila, iterations=2)
     rr = np.array(r)[..., :3]
     gg = np.where(bila[..., None], rr, gg)                                       # → doplnit z předlohy
+    if nova.startswith("helma-"):                        # obličej postavy (kůže) ve výřezu helmy zůstane vidět
+        sx = "zena" if nova.endswith("-zena") else "muz"
+        t = np.array(Image.open(P / f"postava-telo-{sx}.webp").convert("RGBA")).astype(np.int16)
+        skin = (t[..., 3] > 200) & (np.abs(gg - t[..., :3]).sum(axis=2) < 70)
+        skin = ndimage.binary_opening(skin, iterations=2)
+        skin[a < 10] = False
+        a = np.where(ndimage.binary_erosion(~skin, iterations=1) | (a < 10), a, 0).astype(np.uint8)
     out = np.dstack([gg.astype(np.uint8), a]).astype(np.uint8)
     uloz(Image.fromarray(out, "RGBA"), nova)
     j = json.load(open(P / "skryva.json"))
