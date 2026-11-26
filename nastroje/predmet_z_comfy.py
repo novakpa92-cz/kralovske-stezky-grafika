@@ -14,7 +14,11 @@ R = Path(__file__).resolve().parent.parent / "img" / "predmety"
 def vyrez(src, prah=196):
     im = Image.open(src).convert("RGB")
     a = np.asarray(im).astype(int)
-    bg = (a.min(axis=2) > prah) & (a.max(axis=2) - a.min(axis=2) < 20)
+    roh = np.median(np.concatenate([a[:8, :8].reshape(-1, 3), a[:8, -8:].reshape(-1, 3), a[-8:, :8].reshape(-1, 3), a[-8:, -8:].reshape(-1, 3)]), axis=0)
+    if roh.min() > 200:                                   # bílé pozadí
+        bg = (a.min(axis=2) > prah) & (a.max(axis=2) - a.min(axis=2) < 20)
+    else:                                                 # barevné pozadí (zelené u bílých předmětů) — podle barvy v rozích
+        bg = np.abs(a - roh).sum(axis=2) < 90
     lab, n = ndimage.label(bg)
     edge = set(lab[0, :]) | set(lab[-1, :]) | set(lab[:, 0]) | set(lab[:, -1])
     edge.discard(0)
