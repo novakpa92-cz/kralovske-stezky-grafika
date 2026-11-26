@@ -18,6 +18,18 @@ def uloz(im, name):
     im.resize((512, 768), Image.LANCZOS).save(P / f"{name}-m.webp", "WEBP", quality=88)
 
 
+NARAZIT_DOLU, NARAZIT_SIRE = 14, 1.04
+
+
+def narazit(im):
+    """Posun čepice dolů do čela a mírné rozšíření kolem středu hlavy (x 512)."""
+    w, h = im.size
+    big = im.resize((round(w * NARAZIT_SIRE), round(h * NARAZIT_SIRE)), Image.LANCZOS)
+    out = Image.new("RGBA", (w, h))
+    out.alpha_composite(big.crop((round((big.size[0] - w) / 2), 0, round((big.size[0] - w) / 2) + w, h)), (0, NARAZIT_DOLU))
+    return out
+
+
 def main():
     src, nova, ref = sys.argv[1:4]
     vlastni = "vlastni" in sys.argv[4:]        # 1.0-1-6: obrys z vygenerovaného obrázku (klobouky jiného tvaru než předloha)
@@ -43,7 +55,22 @@ def main():
         gg2 = np.array(g).astype(np.int16)                  # původní výstup (bez doplnění z předlohy)
         nebila = ~((gg2.min(axis=2) > 215) & (gg2.max(axis=2) - gg2.min(axis=2) < 25))
         yy = np.arange(1536)[:, None]
-        hl = nebila & ((yy < 192) | (t[..., 3] < 20)) & (yy < 250)      # krempa po stranách, ne vlasy na ramenou
+        kuze = (t[..., 3] > 200) & (np.abs(gg2 - t[..., :3].astype(np.int16)).sum(axis=2) < 75)   # čelo a tvář postavy — nepatří k čepici
+        hl = nebila & ~kuze & ((yy < 192) | (t[..., 3] < 20)) & (yy < 250)
+        if "bez_vlasu" in sys.argv[4:]:                  # Pavel: vygenerované vlasy pryč, pod čepicí navážou vlasy postavy
+            import colorsys
+            f = gg2.astype(np.float32) / 255
+            mx, mn = f.max(axis=2), f.min(axis=2)
+            sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-3), 0)
+            hue = np.zeros_like(mx)
+            r_, g_, b_ = f[..., 0], f[..., 1], f[..., 2]
+            m_ = (mx == r_) & (mx > mn); hue[m_] = ((g_ - b_)[m_] / (mx - mn)[m_]) % 6 * 60
+            vlas = (hue >= 12) & (hue <= 48) & (sat > 0.18) & (sat < 0.75) & (mx < 0.72) & (yy > 120)
+            vlas = ndimage.binary_opening(vlas, iterations=1)
+            hl &= ~ndimage.binary_dilation(vlas, iterations=2)
+            lab, nn = ndimage.label(hl)
+            if nn:
+                vel = ndimage.sum(hl, lab, range(1, nn + 1)); hl = np.isin(lab, [i + 1 for i, v in enumerate(vel) if v > vel.max() * 0.015])      # krempa po stranách, ne vlasy na ramenou
         hl = ndimage.binary_opening(hl, iterations=2)
         lab, nn = ndimage.label(hl)
         if nn:
@@ -58,6 +85,10 @@ def main():
         skin[a < 10] = False
         a = np.where(ndimage.binary_erosion(~skin, iterations=1) | (a < 10), a, 0).astype(np.uint8)
     out = np.dstack([gg.astype(np.uint8), a]).astype(np.uint8)
+    if vlastni:                                          # Pavel: čepici naražit víc do čela (jinak vysoké „plešaté“ čelo)
+        out = narazit(Image.fromarray(out, "RGBA"))
+        uloz(out, nova)
+        return
     uloz(Image.fromarray(out, "RGBA"), nova)
     j = json.load(open(P / "skryva.json"))
     kopie = 0
