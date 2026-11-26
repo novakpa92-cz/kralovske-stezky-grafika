@@ -43,7 +43,7 @@ def main():
         gg2 = np.array(g).astype(np.int16)                  # původní výstup (bez doplnění z předlohy)
         nebila = ~((gg2.min(axis=2) > 215) & (gg2.max(axis=2) - gg2.min(axis=2) < 25))
         yy = np.arange(1536)[:, None]
-        hl = nebila & ((yy < 192) | (t[..., 3] < 20)) & (yy < 330)
+        hl = nebila & ((yy < 192) | (t[..., 3] < 20)) & (yy < 250)      # krempa po stranách, ne vlasy na ramenou
         hl = ndimage.binary_opening(hl, iterations=2)
         lab, nn = ndimage.label(hl)
         if nn:

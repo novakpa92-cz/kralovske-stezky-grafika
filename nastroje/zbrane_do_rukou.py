@@ -96,14 +96,35 @@ def poloz(name, H, grip, cil, rot, zrcadlo=False):
     return out
 
 info = {}
+import math
+def otoc_bod(x, y, c, ang):
+    """Bod (x, y) otočený kolem c o ang stupňů jako Image.rotate (proti směru hodin)."""
+    a = math.radians(ang); dx, dy = x - c[0], y - c[1]
+    return c[0] + dx * math.cos(a) + dy * math.sin(a), c[1] - dx * math.sin(a) + dy * math.cos(a)
+def uhel_jm(ang): return ("m" if ang < 0 else "p") + str(abs(int(ang)))
+PESTI = {}                      # (strana, sx) -> (pěst, rukavice nebo None, kloub zápěstí)
+def pest_natoc(strana, sx, ang):
+    """1.0-1-6 (Pavel): pěst natočená v zápěstí stejně jako zbraň — vrstvy ruka-pest-<strana>-<sx>-<m34…>, u muže i kovová rukavice."""
+    im, im2, kl = PESTI[(strana, sx)]
+    uloz(im.rotate(ang, resample=Image.BICUBIC, center=kl), f"ruka-pest-{strana}-{sx}-{uhel_jm(ang)}")
+    if im2 is not None:
+        uloz(im2.rotate(ang, resample=Image.BICUBIC, center=kl), f"rukavice-pest-{strana}-muz-{uhel_jm(ang)}")
+def v_pesti(n, H, grip, strana, sx, ang, zrcadlo=False, zaklad=0):
+    """Zbraň v natočené pěsti: úchop v jejím středu otočeném kolem zápěstí; zaklad = 180 u zbraní držených hlavou dolů."""
+    p = info[f"{strana}-{sx}"]; kl = PESTI[(strana, sx)][2]
+    cil = otoc_bod(p["x"], p["y"], kl, ang)
+    pest_natoc(strana, sx, ang)
+    return poloz(n, H, grip, cil, zaklad + ang, zrcadlo=zrcadlo)
 for sx in ("muz", "zena"):
     t = np.array(Image.open(POS / f"postava-telo-{sx}.webp").convert("RGBA")).astype(np.float32)
     rg = (t[..., 0] - t[..., 1]) / np.maximum(t[..., 0], 1); ys, xs = np.mgrid[:1536, :1024]
     zb = [np.array(Image.open(f).convert("RGBA"))[..., 3] > 60 for f in sorted(POS.glob(f"zbroj-{sx}-*.webp")) if "skryva" not in f.name and not f.name.endswith("-m.webp")]
     for strana in ("prava", "leva"):
         im, p = pest(f"ruka-pest-{strana}-{sx}"); uloz(im, f"ruka-pest-{strana}-{sx}"); info[f"{strana}-{sx}"] = p
+        im2 = None
         if sx == "muz":
             im2, _ = pest(f"rukavice-pest-{strana}-muz"); uloz(im2, f"rukavice-pest-{strana}-muz")
+        PESTI[(strana, sx)] = (im, im2, (p["x"], p["top"] + 10))     # kloub zápěstí = horní okraj pěsti na ose úchopu
         box = (ys > p["top"] + 12) & (ys < 1010) & (np.abs(xs - (p["x0"] + p["x1"]) / 2) < (p["x1"] - p["x0"]) / 2 + 40)
         telo = box & (t[..., 3] > 10) & (rg >= .17)
         telo = cv2.dilate(telo.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
@@ -116,10 +137,12 @@ for sx in ("muz", "zena"):
         n = f"zbran-{z}"; H = cm * PX; im = obsah(n)
         if druh == "visi" and z in DVOU_MECE:            # hrotem na zemi: délka tak, aby hrot právě došel na zem
             gy = jilec(im); H = (ZEM - P["y"]) / gy; out = poloz(n, H, (stred_x(im, gy), gy), (P["x"], P["y"]), 180)
-        elif druh == "visi" and z != "prak":            # čepel nahoru šikmo přes tělo
-            gy = jilec(im); out = poloz(n, H, (stred_x(im, gy), gy), (P["x"], P["y"]), -(NAKLON_DYKA if z in DYKY else NAKLON_HLAVICE if z in HLAVICE else NAKLON_JEDNORUCNI))
+        elif druh == "visi" and z != "prak":            # čepel nahoru šikmo přes tělo, pěst natočená se zbraní
+            gy = jilec(im); u = -(NAKLON_DYKA if z in DYKY else NAKLON_HLAVICE if z in HLAVICE else NAKLON_JEDNORUCNI)
+            out = v_pesti(n, H, (stred_x(im, gy), gy), "prava", sx, u)
             if z not in DYKY:                            # se štítem víc šikmo (hlavice stejně)
-                uloz(poloz(n, H, (stred_x(im, gy), gy), (P["x"], P["y"]), -(NAKLON_HLAVICE if z in HLAVICE else NAKLON_SE_STITEM)), f"zbran-ruka-{z}-{sx}-stit")
+                u2 = -(NAKLON_HLAVICE if z in HLAVICE else NAKLON_SE_STITEM)
+                uloz(v_pesti(n, H, (stred_x(im, gy), gy), "prava", sx, u2), f"zbran-ruka-{z}-{sx}-stit")
         elif druh == "visi":
             gy = jilec(im); out = poloz(n, H, (stred_x(im, gy), gy), (P["x"], P["y"]), 180)
         elif druh == "stoji":
@@ -127,11 +150,11 @@ for sx in ("muz", "zena"):
         elif druh == "luk":
             out = poloz(n, H, (stred_x(im, .5), .5), (Lv["x"], Lv["y"]), 0)
         else:
-            gy = .93; out = poloz(n, H, (stred_x(im, gy), gy), (P["x"], P["y"]), 180 + NAKLON_KUSE)   # 1.0-1-6: šikmo dolů přes nohy (Pavel)
+            gy = .93; out = v_pesti(n, H, (stred_x(im, gy), gy), "prava", sx, NAKLON_KUSE, zaklad=180)   # 1.0-1-6: šikmo dolů přes nohy (Pavel)
         uloz(out, f"zbran-ruka-{z}-{sx}")
     for z in LEVA:                                     # 1.0-1-6: zbraň v levé pěsti (zrcadlo pravé)
         n = f"zbran-{z}"; H = ZBRANE[z][1] * PX; im = obsah(n)
-        gy = jilec(im); out = poloz(n, H, (1 - stred_x(im, gy), gy), (Lv["x"], Lv["y"]), 180 + NAKLON_LEVA, zrcadlo=True)
+        gy = jilec(im); out = v_pesti(n, H, (1 - stred_x(im, gy), gy), "leva", sx, NAKLON_LEVA, zrcadlo=True, zaklad=180)
         uloz(out, f"zbran-leva-{z}-{sx}")
     for s_, cm in STITY.items():
         H = cm * PX; out = poloz(s_, H, (.5, .45), (Lv["x"] + STIT_POSUN[0], Lv["y"] + STIT_POSUN[1]), STIT_NAKLON); uloz(out, f"stit-ruka-{s_[5:]}-{sx}")   # štít před tělem na levém předloktí, 1.0-1-6: mírně nakloněný (Pavel)
