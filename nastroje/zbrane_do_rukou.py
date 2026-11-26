@@ -40,7 +40,14 @@ STIT_NAKLON = 15               # Pavel 21:31: štít níž před levým bokem, v
 STIT_POSUN = (-65, 40)         # střed štítu vůči levé pěsti (px)
 NAKLON_SE_STITEM = 47
 HLAVICE = {"sekyrka", "palcat", "hejtmanuv-palcat", "valecne-kladivo", "remdih", "bojova-sekera", "cakan"}   # topůrko k opasku
-NAKLON_HLAVICE = 52          # jednoruční zbraň se štítem: víc šikmo přes tělo (vrstvy zbran-ruka-<slug>-<sx>-stit)                # 1.0-1-6: štíty mírně nakloněné horní hranou k tělu (stupně, proti směru hodin)
+NAKLON_HLAVICE = 52
+SEKERY = {"sekyrka", "bojova-sekera", "cakan"}   # Pavel: u nakloněných seker ostří vždy k zemi
+def ostri_vlevo(im):
+    """Je ostří (větší část hlavice) vlevo od topůrka? Hlavice = horní čtvrtina obrázku."""
+    a = np.array(im)[..., 3] > 80; H = a.shape[0]
+    osa = stred_x(im, .7) * a.shape[1]
+    hl = a[: H // 4]; xs = np.where(hl)[1]
+    return len(xs) and (xs < osa).sum() > (xs > osa).sum()          # jednoruční zbraň se štítem: víc šikmo přes tělo (vrstvy zbran-ruka-<slug>-<sx>-stit)                # 1.0-1-6: štíty mírně nakloněné horní hranou k tělu (stupně, proti směru hodin)
 STITY = {"stit-pestni": 34, "stit-jezdecky": 64, "stit-malovana-paveza": 105, "stit-mistrovsky": 72, "stit-lehky-dreveny": 58, "stit-okovany": 66, "stit-paveza": 100, "stit-rytirsky": 70, "stit-tezky-dreveny": 66}
 
 def uloz(img, name):
@@ -139,10 +146,12 @@ for sx in ("muz", "zena"):
             gy = jilec(im); H = (ZEM - P["y"]) / gy; out = poloz(n, H, (stred_x(im, gy), gy), (P["x"], P["y"]), 180)
         elif druh == "visi" and z != "prak":            # čepel nahoru šikmo přes tělo, pěst natočená se zbraní
             gy = jilec(im); u = -(NAKLON_DYKA if z in DYKY else NAKLON_HLAVICE if z in HLAVICE else NAKLON_JEDNORUCNI)
-            out = v_pesti(n, H, (stred_x(im, gy), gy), "prava", sx, u)
+            zr = z in SEKERY and ostri_vlevo(im)         # po naklonění doprava by ostří mířilo nahoru → zrcadlit
+            gx = 1 - stred_x(im, gy) if zr else stred_x(im, gy)
+            out = v_pesti(n, H, (gx, gy), "prava", sx, u, zrcadlo=zr)
             if z not in DYKY:                            # se štítem víc šikmo (hlavice stejně)
                 u2 = -(NAKLON_HLAVICE if z in HLAVICE else NAKLON_SE_STITEM)
-                uloz(v_pesti(n, H, (stred_x(im, gy), gy), "prava", sx, u2), f"zbran-ruka-{z}-{sx}-stit")
+                uloz(v_pesti(n, H, (gx, gy), "prava", sx, u2, zrcadlo=zr), f"zbran-ruka-{z}-{sx}-stit")
         elif druh == "visi":
             gy = jilec(im); out = poloz(n, H, (stred_x(im, gy), gy), (P["x"], P["y"]), 180)
         elif druh == "stoji":
