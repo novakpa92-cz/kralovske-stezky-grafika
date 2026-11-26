@@ -34,9 +34,19 @@ def main():
         tt.alpha_composite(Image.open(P / ("odev-muz-lnena-kosile.webp" if sx == "muz" else "odev-zena-lnena-kosilka.webp")).convert("RGBA"))
     t = np.array(tt).astype(np.int16)
     yy = np.arange(1536)[:, None]
+    telo = np.array(Image.open(P / f"postava-telo-{sx}.webp").convert("RGBA")).astype(np.int16)
     bila = (g.min(axis=2) > 222) & (g.max(axis=2) - g.min(axis=2) < 22)
+    # oblast, kterou ComfyUI překreslovalo (stejně jako maska v inpaintu)
+    ta = telo[..., 3] > 10
+    oblast = (ndimage.binary_dilation(ta, iterations=45) & (yy > 290) & (yy < 1060)) if spodni else (ndimage.binary_dilation(ta, iterations=70) & (yy > 300))
+    rg = (telo[..., 0] - telo[..., 1]) / np.maximum(telo[..., 0], 1)
+    kuze = (telo[..., 3] > 200) & (rg >= .17)                     # odhalená kůže těla (ne prádlo)
     rozdil = np.abs(g - t[..., :3]).sum(axis=2)
-    latka = (yy > 285) & (((t[..., 3] < 20) & ~bila) | ((t[..., 3] > 200) & (rozdil > 55)))
+    zustava = (kuze & (rozdil < 70))                               # kůže, kterou ComfyUI nezměnilo (ruce, nohy)
+    if spodni:                                                     # košile, kterou zbroj nezakryla
+        kosile = (t[..., 3] > 200) & ~kuze
+        zustava |= kosile & (rozdil < 45)
+    latka = oblast & ~bila & ~zustava
     latka = ndimage.binary_opening(latka, iterations=2)
     lab, n = ndimage.label(latka)
     if n:
