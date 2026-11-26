@@ -24,7 +24,12 @@ def upect(k, v):
     c = im.crop(bb)
     if v.get("schovat"):                      # štětec „Schovat za hlavu“ / „Vrátit“ (souřadnice v ořezu čepice, plátno 1:1)
         m = Image.new("L", c.size, 255); d = ImageDraw.Draw(m); orig = c.getchannel("A")
-        for x, y, r, pryc in v["schovat"]:
+        for pol in v["schovat"]:
+            if pol and pol[0] == "p":                       # obrys (mnohoúhelník) z vylepšeného plátna
+                body = [tuple(b) for b in pol[1]]
+                if len(body) >= 3: d.polygon(body, fill=0 if pol[2] else 255)
+                continue
+            x, y, r, pryc = pol
             d.ellipse((x - r, y - r, x + r, y + r), fill=0 if pryc else 255)
         c.putalpha(Image.fromarray(np.minimum(np.array(orig), np.array(m))))
     s, r = v.get("s", 1), v.get("r", 0)
