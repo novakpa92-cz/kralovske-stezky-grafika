@@ -30,6 +30,7 @@ ZBRANE = {
   "valecny-luk": ("luk", 185), "kuse-s-heverem": ("kuse", 95),
   "lehka-kuse": ("kuse", 78), "tezka-kuse": ("kuse", 92), "arbalest": ("kuse", 88), "hakovnice": ("kuse", 100), "pistala": ("kuse", 62),
 }
+STIT_NAKLON = 8                # 1.0-1-6: štíty mírně nakloněné horní hranou k tělu (stupně, proti směru hodin)
 STITY = {"stit-pestni": 34, "stit-jezdecky": 64, "stit-malovana-paveza": 105, "stit-mistrovsky": 72, "stit-lehky-dreveny": 58, "stit-okovany": 66, "stit-paveza": 100, "stit-rytirsky": 70, "stit-tezky-dreveny": 66}
 
 def uloz(img, name):
@@ -111,7 +112,7 @@ for sx in ("muz", "zena"):
             gy = .93; out = poloz(n, H, (stred_x(im, gy), gy), (P["x"], P["y"]), 180)
         uloz(out, f"zbran-ruka-{z}-{sx}")
     for s_, cm in STITY.items():
-        H = cm * PX; out = poloz(s_, H, (.5, .45), (Lv["x"] - 95, Lv["y"] - 60), 0); uloz(out, f"stit-ruka-{s_[5:]}-{sx}")   # štít před tělem na levém předloktí
+        H = cm * PX; out = poloz(s_, H, (.5, .45), (Lv["x"] - 95, Lv["y"] - 60), STIT_NAKLON); uloz(out, f"stit-ruka-{s_[5:]}-{sx}")   # štít před tělem na levém předloktí, 1.0-1-6: mírně nakloněný (Pavel)
     out = poloz("svetlo-louc", 55 * PX, (stred_x(obsah("svetlo-louc"), .62), .62), (Lv["x"], Lv["y"]), 0); uloz(out, f"svetlo-louc-ruka-{sx}")
 json.dump(info, open(POS / "ruce.json", "w"), indent=1)
 j = json.load(open(POS / "skryva.json"))
