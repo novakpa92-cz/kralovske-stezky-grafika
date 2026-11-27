@@ -23,9 +23,9 @@ def maska(cap, hair):
         ys = np.where(a[:, x])[0]; yb[x] = ys.max() if len(ys) else 0
     yb = ndimage.maximum_filter1d(yb, 9); yb[:x0] = yb[x0]; yb[x1 + 1:] = yb[x1]
     nad = np.arange(H)[:, None] < (yb[None, :] - 6)
-    okno = np.zeros(W, bool); okno[max(0, x0 - 40):x1 + 41] = True
+    okno = np.zeros(W, bool); okno[max(0, x0 - 8):x1 + 9] = True
     m = (nad & okno[None, :] & hair) | a
-    m = ndimage.gaussian_filter(m.astype(np.float32), 1.0)
+    m = ndimage.gaussian_filter(m.astype(np.float32), 2.2)   # měkký přechod vlasů pod okrajem
     out = np.zeros((H, W, 4), np.uint8); out[..., 3] = (m * 255).clip(0, 255).astype(np.uint8)
     return Image.fromarray(out)
 if __name__ == "__main__":
