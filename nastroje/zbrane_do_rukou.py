@@ -13,8 +13,9 @@ from pathlib import Path
 R = Path(__file__).resolve().parent.parent / "img"
 POS, ZBR = R / "postava", R / "predmety" / "zbrane"
 SRC = Path(sys.argv[1])
-PX = 7.5                      # px na cm (postava ~ 175 cm)
-ZEM = 1495                    # řádek země (chodidla)
+PX_SX = {"muz": 1340 / 178, "zena": 1337 / 166}   # px na cm podle výšky postavy (muž 178 cm, žena 166 cm) — zbraně ve skutečné velikosti
+PX = PX_SX["muz"]
+ZEM = 1450                    # řádek země (spodek bot)
 # druh: visi = rukojeť v pěsti, čepel/hlava dolů · stoji = svisle, patka na zemi · luk = za střed v levé · kuse = za pažbu, luček dolů
 ZBRANE = {
   "dlouhy-mec": ("visi", 100), "kratky-mec": ("visi", 75), "jeskuv-mec": ("visi", 95), "cepel-cerneho-rytire": ("visi", 105),
@@ -123,6 +124,7 @@ def v_pesti(n, H, grip, strana, sx, ang, zrcadlo=False, zaklad=0):
     pest_natoc(strana, sx, ang)
     return poloz(n, H, grip, cil, zaklad + ang, zrcadlo=zrcadlo)
 for sx in ("muz", "zena"):
+    PX = PX_SX[sx]
     t = np.array(Image.open(POS / f"postava-telo-{sx}.webp").convert("RGBA")).astype(np.float32)
     rg = (t[..., 0] - t[..., 1]) / np.maximum(t[..., 0], 1); ys, xs = np.mgrid[:1536, :1024]
     zb = [np.array(Image.open(f).convert("RGBA"))[..., 3] > 60 for f in sorted(POS.glob(f"zbroj-{sx}-*.webp")) if "skryva" not in f.name and not f.name.endswith("-m.webp")]
