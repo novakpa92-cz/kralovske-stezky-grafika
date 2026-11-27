@@ -1,4 +1,12 @@
-{"_pozn": "Pavel 27. 11. 14:58 — ženské čepice s vadou (vlasy, čelo, obličej). Nepoužít; ve hře náhradní účes, pak přegenerovat.",
- "zena": ["brokatova-cepice-ofina", "brokatova-cepice-copanek", "cerny-baret-s-perem-kudrnate", "cerny-baret-s-perem-copanek",
-          "cerny-baret-s-perem-bez", "kozena-cepice-kudrnate", "kozena-cepice-bez", "perlovy-cepec-dlouhe", "sametovy-baret-dlouhe",
-          "sametovy-baret-kudrnate", "sametovy-baret-bez", "venecek-stredni", "venecek-ofina", "vysivana-cepice-stredni"]}
+{
+ "_pozn": "Pavel 27. 11. 14:58 — ženské čepice s vadou (vlasy, čelo, obličej). Nepoužít; ve hře náhradní účes, pak přegenerovat.",
+ "zena": [
+  "brokatova-cepice-ofina",
+  "brokatova-cepice-copanek",
+  "cerny-baret-s-perem-kudrnate",
+  "cerny-baret-s-perem-copanek",
+  "cerny-baret-s-perem-bez",
+  "venecek-stredni",
+  "vysivana-cepice-stredni"
+ ]
+}
