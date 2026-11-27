@@ -32,7 +32,7 @@ top = np.where(A.any(1))[0].min()
 hem = np.full(W, -1)
 lc = int(np.where(A[:, 512])[0].max())                 # lem uprostřed
 yr = lc - 40                                          # řádek nad lemem: šířka trupu zbroje
-seg = [(a_, b_) for a_, b_ in useky(A[yr]) if a_ <= 512 <= b_][0]
+_sg = useky(A[yr]); seg = ([(a_, b_) for a_, b_ in _sg if a_ <= 512 <= b_] or [max(_sg, key=lambda u: u[1] - u[0])])[0]   # 1.0-1-15: střed může být v rozparku
 for x in range(seg[0], seg[1] + 1):
     c = np.where(A[yr:, x])[0]
     hem[x] = yr + (c.max() if len(c) else 0)
@@ -294,7 +294,7 @@ if ruk == "kratke":                                    # spodní prádlo: kde je
     _c, _lab, _st, _ = cv2.connectedComponentsWithStats(_vb)   # útržky prádla kolem podpaží (ne paže) pryč
     for _i in range(1, _c):
         if _st[_i, cv2.CC_STAT_AREA] < 1500: RB[_lab == _i] = True
-for y in range(650, int(hem.max()) + 1):              # rozparek zbroje: uvnitř je vidět spodní vrstva (oděv i prádlo)
+for y in range(650, min(H, int(hem.max()) + 1)):       # rozparek zbroje: uvnitř je vidět spodní vrstva (oděv i prádlo)
     sg = [u for u in useky(A[y]) if abs((u[0] + u[1]) / 2 - 512) < 200]
     if len(sg) < 2: continue
     sg.sort(); a_ = sg[0][1] + 1; b_ = sg[-1][0]
