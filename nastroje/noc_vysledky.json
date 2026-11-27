@@ -461,7 +461,7 @@
  },
  "kh-cepice-muz-kozena-cepice-bez": {
   "stav": "vyrazeno_okem",
-  "duvod": "čepice barvy kůže"
+  "duvod": "vada u varianty (2. pokus)"
  },
  "kh-cepice-muz-kozena-cepice-stredni": {
   "stav": "ok",
@@ -576,12 +576,22 @@
   "px": 13950
  },
  "kh-cepice-muz-platena-cepice-kudrnate": {
-  "stav": "vyrazeno_okem",
-  "duvod": "skvrna na čepici"
+  "stav": "ok",
+  "vrstva": "helma-platena-cepice-kudrnate",
+  "zdroj": "kh-cepice-muz-platena-cepice-kudrnate-2_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 32.3,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.3
+  },
+  "px": 15308
  },
  "kh-cepice-muz-platena-cepice-ofina": {
   "stav": "vyrazeno_okem",
-  "duvod": "skvrna na čepici"
+  "duvod": "vada u varianty (2. pokus)"
  },
  "kh-cepice-muz-platena-cepice-stredni": {
   "stav": "ok",
@@ -598,12 +608,22 @@
   "px": 14897
  },
  "kh-cepice-muz-platena-cepice-tonzura": {
-  "stav": "vyrazeno_okem",
-  "duvod": "čepice chybí"
+  "stav": "ok",
+  "vrstva": "helma-platena-cepice-tonzura",
+  "zdroj": "kh-cepice-muz-platena-cepice-tonzura-2_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 33.4,
+   "ruce": 2.6,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 12666
  },
  "kh-cepice-muz-sametovy-baret-bez": {
   "stav": "vyrazeno_okem",
-  "duvod": "čepice barvy kůže"
+  "duvod": "vada u varianty (2. pokus)"
  },
  "kh-cepice-muz-sametovy-baret-copanek": {
   "stav": "ok",
@@ -2032,5 +2052,209 @@
    "oblicej": 2.9
   },
   "px": 16616
+ },
+ "kh-cepice-zena-venecek-bez": {
+  "stav": "vyrazeno_okem",
+  "duvod": "vada u varianty (2. pokus)"
+ },
+ "kh-cepice-zena-venecek-copanek": {
+  "stav": "ok",
+  "vrstva": "helma-venecek-zena-copanek",
+  "zdroj": "kh-cepice-zena-venecek-copanek-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 25.6,
+   "ruce": 2.7,
+   "chodidla": 2.3,
+   "pozadi": 0.1,
+   "oblicej": 3.0
+  },
+  "px": 17250
+ },
+ "kh-cepice-zena-venecek-dlouhe": {
+  "stav": "ok",
+  "vrstva": "helma-venecek-zena-dlouhe",
+  "zdroj": "kh-cepice-zena-venecek-dlouhe-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 18.5,
+   "ruce": 2.8,
+   "chodidla": 2.3,
+   "pozadi": 0.2,
+   "oblicej": 3.1
+  },
+  "px": 18715
+ },
+ "kh-cepice-zena-venecek-kratke": {
+  "stav": "ok",
+  "vrstva": "helma-venecek-zena-kratke",
+  "zdroj": "kh-cepice-zena-venecek-kratke-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 26.3,
+   "ruce": 2.7,
+   "chodidla": 2.3,
+   "pozadi": 0.1,
+   "oblicej": 3.0
+  },
+  "px": 15901
+ },
+ "kh-cepice-zena-venecek-kudrnate": {
+  "stav": "ok",
+  "vrstva": "helma-venecek-zena-kudrnate",
+  "zdroj": "kh-cepice-zena-venecek-kudrnate-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 27.5,
+   "ruce": 2.7,
+   "chodidla": 2.3,
+   "pozadi": 0.1,
+   "oblicej": 3.0
+  },
+  "px": 16082
+ },
+ "kh-cepice-zena-venecek-ofina": {
+  "stav": "ok",
+  "vrstva": "helma-venecek-zena-ofina",
+  "zdroj": "kh-cepice-zena-venecek-ofina-1_00001_.png",
+  "odchylky": {
+   "paze": 0.17,
+   "hlava": 31.9,
+   "ruce": 2.8,
+   "chodidla": 2.3,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 13631
+ },
+ "kh-cepice-zena-venecek-stredni": {
+  "stav": "ok",
+  "vrstva": "helma-venecek-zena-stredni",
+  "zdroj": "kh-cepice-zena-venecek-stredni-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 27.7,
+   "ruce": 2.8,
+   "chodidla": 2.3,
+   "pozadi": 0.2,
+   "oblicej": 2.9
+  },
+  "px": 16016
+ },
+ "kh-cepice-zena-venecek-tonzura": {
+  "stav": "ok",
+  "vrstva": "helma-venecek-zena-tonzura",
+  "zdroj": "kh-cepice-zena-venecek-tonzura-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 43.8,
+   "ruce": 2.7,
+   "chodidla": 2.3,
+   "pozadi": 0.2,
+   "oblicej": 2.9
+  },
+  "px": 14226
+ },
+ "kh-cepice-zena-perlovy-cepec-bez": {
+  "stav": "vyrazeno_okem",
+  "duvod": "vada u varianty (2. pokus)"
+ },
+ "kh-cepice-zena-perlovy-cepec-copanek": {
+  "stav": "ok",
+  "vrstva": "helma-perlovy-cepec-zena-copanek",
+  "zdroj": "kh-cepice-zena-perlovy-cepec-copanek-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 49.0,
+   "ruce": 2.7,
+   "chodidla": 2.3,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 16501
+ },
+ "kh-cepice-zena-perlovy-cepec-dlouhe": {
+  "stav": "ok",
+  "vrstva": "helma-perlovy-cepec-zena-dlouhe",
+  "zdroj": "kh-cepice-zena-perlovy-cepec-dlouhe-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 25.0,
+   "ruce": 2.8,
+   "chodidla": 2.3,
+   "pozadi": 0.2,
+   "oblicej": 3.1
+  },
+  "px": 22007
+ },
+ "kh-cepice-zena-perlovy-cepec-kratke": {
+  "stav": "ok",
+  "vrstva": "helma-perlovy-cepec-zena-kratke",
+  "zdroj": "kh-cepice-zena-perlovy-cepec-kratke-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 29.2,
+   "ruce": 2.7,
+   "chodidla": 2.3,
+   "pozadi": 0.1,
+   "oblicej": 3.2
+  },
+  "px": 18281
+ },
+ "kh-cepice-zena-perlovy-cepec-kudrnate": {
+  "stav": "ok",
+  "vrstva": "helma-perlovy-cepec-zena-kudrnate",
+  "zdroj": "kh-cepice-zena-perlovy-cepec-kudrnate-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 45.4,
+   "ruce": 2.7,
+   "chodidla": 2.3,
+   "pozadi": 0.1,
+   "oblicej": 3.3
+  },
+  "px": 20378
+ },
+ "kh-cepice-zena-perlovy-cepec-ofina": {
+  "stav": "ok",
+  "vrstva": "helma-perlovy-cepec-zena-ofina",
+  "zdroj": "kh-cepice-zena-perlovy-cepec-ofina-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 36.3,
+   "ruce": 2.7,
+   "chodidla": 2.3,
+   "pozadi": 0.1,
+   "oblicej": 2.9
+  },
+  "px": 16326
+ },
+ "kh-cepice-zena-perlovy-cepec-stredni": {
+  "stav": "ok",
+  "vrstva": "helma-perlovy-cepec-zena-stredni",
+  "zdroj": "kh-cepice-zena-perlovy-cepec-stredni-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 34.5,
+   "ruce": 2.7,
+   "chodidla": 2.3,
+   "pozadi": 0.2,
+   "oblicej": 2.9
+  },
+  "px": 16805
+ },
+ "kh-cepice-zena-perlovy-cepec-tonzura": {
+  "stav": "ok",
+  "vrstva": "helma-perlovy-cepec-zena-tonzura",
+  "zdroj": "kh-cepice-zena-perlovy-cepec-tonzura-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 33.7,
+   "ruce": 2.7,
+   "chodidla": 2.3,
+   "pozadi": 0.1,
+   "oblicej": 3.0
+  },
+  "px": 24032
  }
 }
