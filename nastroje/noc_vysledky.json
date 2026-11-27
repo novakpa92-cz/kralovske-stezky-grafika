@@ -87,29 +87,29 @@
   "stav": "nic_nenakresleno",
   "varianty": [
    [
-    "kz-plast-muz-kozesinovy-5_00001_.png",
+    "kz-plast-muz-kozesinovy-7_00001_.png",
     {
-     "paze": 0.02,
+     "paze": 0.04,
      "hlava": 2.0,
      "ruce": 2.6,
-     "chodidla": 29.7,
-     "pozadi": 0.0,
-     "oblicej": 2.8
+     "chodidla": 20.5,
+     "pozadi": 0.1,
+     "oblicej": 2.9
     }
    ],
    [
-    "kz-plast-muz-kozesinovy-6_00001_.png",
+    "kz-plast-muz-kozesinovy-8_00001_.png",
     {
      "paze": 0.03,
-     "hlava": 2.0,
+     "hlava": 2.1,
      "ruce": 2.6,
-     "chodidla": 24.0,
+     "chodidla": 30.7,
      "pozadi": 0.1,
      "oblicej": 2.9
     }
    ]
   ],
-  "px": 9142
+  "px": 12747
  },
  "kz-plast-muz-s-kapi-a-lemem": {
   "stav": "ok",
@@ -129,57 +129,57 @@
   "stav": "nic_nenakresleno",
   "varianty": [
    [
-    "kz-plast-zena-kozesinovy-5_00001_.png",
+    "kz-plast-zena-kozesinovy-7_00001_.png",
     {
-     "paze": 0.22,
-     "hlava": 2.1,
-     "ruce": 2.6,
-     "chodidla": 29.9,
+     "paze": 0.06,
+     "hlava": 2.2,
+     "ruce": 2.7,
+     "chodidla": 34.2,
      "pozadi": 0.1,
-     "oblicej": 2.8
+     "oblicej": 2.9
     }
    ],
    [
-    "kz-plast-zena-kozesinovy-6_00001_.png",
+    "kz-plast-zena-kozesinovy-8_00001_.png",
     {
-     "paze": 0.37,
+     "paze": 0.04,
      "hlava": 2.2,
      "ruce": 2.7,
-     "chodidla": 39.2,
-     "pozadi": 0.2,
-     "oblicej": 3.2
+     "chodidla": 33.2,
+     "pozadi": 0.1,
+     "oblicej": 3.3
     }
    ]
   ],
-  "px": 39267
+  "px": 48263
  },
  "kz-plast-zena-s-kapi-a-lemem": {
   "stav": "nic_nenakresleno",
   "varianty": [
    [
-    "kz-plast-zena-s-kapi-a-lemem-5_00001_.png",
+    "kz-plast-zena-s-kapi-a-lemem-8_00001_.png",
     {
-     "paze": 0.06,
+     "paze": 0.21,
      "hlava": 2.1,
      "ruce": 2.7,
-     "chodidla": 45.7,
+     "chodidla": 37.3,
      "pozadi": 0.1,
      "oblicej": 2.8
     }
    ],
    [
-    "kz-plast-zena-s-kapi-a-lemem-6_00001_.png",
+    "kz-plast-zena-s-kapi-a-lemem-7_00001_.png",
     {
-     "paze": 0.58,
-     "hlava": 2.3,
+     "paze": 0.15,
+     "hlava": 2.2,
      "ruce": 2.7,
-     "chodidla": 46.4,
+     "chodidla": 28.0,
      "pozadi": 0.1,
-     "oblicej": 3.6
+     "oblicej": 3.1
     }
    ]
   ],
-  "px": 75917
+  "px": 69268
  },
  "kz-zbroj-muz-brigantina-s-platovymi-rameny": {
   "stav": "ok",
@@ -211,11 +211,11 @@
  },
  "kz-zbroj-muz-lovecky-kabatec": {
   "stav": "vyrazeno_okem",
-  "duvod": "jen hnědé rukávy, trup lněný"
+  "duvod": "skvrny místo kabátce (3. pokus)"
  },
  "kz-zbroj-muz-milanska-zbroj": {
   "stav": "vyrazeno_okem",
-  "duvod": "hruď bez plátu"
+  "duvod": "lněná skvrna na hrudi (3. pokus)"
  },
  "kz-zbroj-muz-supinova-zbroj": {
   "stav": "ok",
@@ -233,7 +233,7 @@
  },
  "kz-zbroj-muz-vycpavana-kazajka": {
   "stav": "vyrazeno_okem",
-  "duvod": "košile s knoflíky, ne kazajka"
+  "duvod": "skvrny místo kazajky (3. pokus)"
  },
  "kz-zbroj-zena-krouzkova-kosile": {
   "stav": "ok",
@@ -458,5 +458,361 @@
    "oblicej": 3.2
   },
   "px": 20530
+ },
+ "kh-cepice-muz-kozena-cepice-bez": {
+  "stav": "vyrazeno_okem",
+  "duvod": "čepice barvy kůže"
+ },
+ "kh-cepice-muz-kozena-cepice-stredni": {
+  "stav": "ok",
+  "vrstva": "helma-kozena-cepice-stredni",
+  "zdroj": "kh-cepice-muz-kozena-cepice-stredni-1_00001_.png",
+  "odchylky": {
+   "paze": 0.01,
+   "hlava": 21.9,
+   "ruce": 2.7,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.2
+  },
+  "px": 13271
+ },
+ "kh-cepice-muz-kozena-cepice-tonzura": {
+  "stav": "ok",
+  "vrstva": "helma-kozena-cepice-tonzura",
+  "zdroj": "kh-cepice-muz-kozena-cepice-tonzura-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 26.0,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 14600
+ },
+ "kh-cepice-muz-mekka-cepice-s-perem-dlouhe": {
+  "stav": "ok",
+  "vrstva": "helma-mekka-cepice-s-perem-dlouhe",
+  "zdroj": "kh-cepice-muz-mekka-cepice-s-perem-dlouhe-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 20.2,
+   "ruce": 2.6,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 16813
+ },
+ "kh-cepice-muz-mekka-cepice-s-perem-kratke": {
+  "stav": "ok",
+  "vrstva": "helma-mekka-cepice-s-perem-kratke",
+  "zdroj": "kh-cepice-muz-mekka-cepice-s-perem-kratke-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 27.3,
+   "ruce": 2.6,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 13827
+ },
+ "kh-cepice-muz-platena-cepice-bez": {
+  "stav": "ok",
+  "vrstva": "helma-platena-cepice-bez",
+  "zdroj": "kh-cepice-muz-platena-cepice-bez-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 22.5,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 11584
+ },
+ "kh-cepice-muz-platena-cepice-copanek": {
+  "stav": "ok",
+  "vrstva": "helma-platena-cepice-copanek",
+  "zdroj": "kh-cepice-muz-platena-cepice-copanek-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 23.9,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 10587
+ },
+ "kh-cepice-muz-platena-cepice-dlouhe": {
+  "stav": "ok",
+  "vrstva": "helma-platena-cepice-dlouhe",
+  "zdroj": "kh-cepice-muz-platena-cepice-dlouhe-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 45.2,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 16800
+ },
+ "kh-cepice-muz-platena-cepice-kratke": {
+  "stav": "ok",
+  "vrstva": "helma-platena-cepice-kratke",
+  "zdroj": "kh-cepice-muz-platena-cepice-kratke-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 42.0,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 13950
+ },
+ "kh-cepice-muz-platena-cepice-kudrnate": {
+  "stav": "vyrazeno_okem",
+  "duvod": "skvrna na čepici"
+ },
+ "kh-cepice-muz-platena-cepice-ofina": {
+  "stav": "vyrazeno_okem",
+  "duvod": "skvrna na čepici"
+ },
+ "kh-cepice-muz-platena-cepice-stredni": {
+  "stav": "ok",
+  "vrstva": "helma-platena-cepice-stredni",
+  "zdroj": "kh-cepice-muz-platena-cepice-stredni-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 48.2,
+   "ruce": 2.7,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.2
+  },
+  "px": 14897
+ },
+ "kh-cepice-muz-platena-cepice-tonzura": {
+  "stav": "vyrazeno_okem",
+  "duvod": "čepice chybí"
+ },
+ "kh-cepice-muz-sametovy-baret-bez": {
+  "stav": "vyrazeno_okem",
+  "duvod": "čepice barvy kůže"
+ },
+ "kh-cepice-muz-sametovy-baret-copanek": {
+  "stav": "ok",
+  "vrstva": "helma-sametovy-baret-copanek",
+  "zdroj": "kh-cepice-muz-sametovy-baret-copanek-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 23.6,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 12296
+ },
+ "kh-cepice-muz-sametovy-baret-dlouhe": {
+  "stav": "ok",
+  "vrstva": "helma-sametovy-baret-dlouhe",
+  "zdroj": "kh-cepice-muz-sametovy-baret-dlouhe-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 18.8,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 16702
+ },
+ "kh-cepice-muz-sametovy-baret-kratke": {
+  "stav": "ok",
+  "vrstva": "helma-sametovy-baret-kratke",
+  "zdroj": "kh-cepice-muz-sametovy-baret-kratke-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 23.9,
+   "ruce": 2.6,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 12484
+ },
+ "kh-cepice-muz-sametovy-baret-kudrnate": {
+  "stav": "ok",
+  "vrstva": "helma-sametovy-baret-kudrnate",
+  "zdroj": "kh-cepice-muz-sametovy-baret-kudrnate-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 22.6,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.2
+  },
+  "px": 16027
+ },
+ "kh-cepice-muz-sametovy-baret-ofina": {
+  "stav": "ok",
+  "vrstva": "helma-sametovy-baret-ofina",
+  "zdroj": "kh-cepice-muz-sametovy-baret-ofina-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 20.3,
+   "ruce": 2.6,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 17380
+ },
+ "kh-cepice-muz-sametovy-baret-stredni": {
+  "stav": "ok",
+  "vrstva": "helma-sametovy-baret-stredni",
+  "zdroj": "kh-cepice-muz-sametovy-baret-stredni-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 22.7,
+   "ruce": 2.7,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 14229
+ },
+ "kh-cepice-muz-sametovy-baret-tonzura": {
+  "stav": "ok",
+  "vrstva": "helma-sametovy-baret-tonzura",
+  "zdroj": "kh-cepice-muz-sametovy-baret-tonzura-1_00001_.png",
+  "odchylky": {
+   "paze": 0.22,
+   "hlava": 40.2,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.2
+  },
+  "px": 11556
+ },
+ "kh-cepice-muz-vysivana-cepice-bez": {
+  "stav": "ok",
+  "vrstva": "helma-vysivana-cepice-bez",
+  "zdroj": "kh-cepice-muz-vysivana-cepice-bez-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 35.9,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 13189
+ },
+ "kh-cepice-muz-vysivana-cepice-copanek": {
+  "stav": "ok",
+  "vrstva": "helma-vysivana-cepice-copanek",
+  "zdroj": "kh-cepice-muz-vysivana-cepice-copanek-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 27.8,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 11284
+ },
+ "kh-cepice-muz-vysivana-cepice-dlouhe": {
+  "stav": "ok",
+  "vrstva": "helma-vysivana-cepice-dlouhe",
+  "zdroj": "kh-cepice-muz-vysivana-cepice-dlouhe-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 26.9,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.2
+  },
+  "px": 19705
+ },
+ "kh-cepice-muz-vysivana-cepice-kratke": {
+  "stav": "ok",
+  "vrstva": "helma-vysivana-cepice-kratke",
+  "zdroj": "kh-cepice-muz-vysivana-cepice-kratke-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 26.7,
+   "ruce": 2.6,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 14420
+ },
+ "kh-cepice-muz-vysivana-cepice-kudrnate": {
+  "stav": "ok",
+  "vrstva": "helma-vysivana-cepice-kudrnate",
+  "zdroj": "kh-cepice-muz-vysivana-cepice-kudrnate-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 28.6,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.4
+  },
+  "px": 16756
+ },
+ "kh-cepice-muz-vysivana-cepice-ofina": {
+  "stav": "ok",
+  "vrstva": "helma-vysivana-cepice-ofina",
+  "zdroj": "kh-cepice-muz-vysivana-cepice-ofina-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 26.6,
+   "ruce": 2.6,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 15163
+ },
+ "kh-cepice-muz-vysivana-cepice-stredni": {
+  "stav": "ok",
+  "vrstva": "helma-vysivana-cepice-stredni",
+  "zdroj": "kh-cepice-muz-vysivana-cepice-stredni-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 29.7,
+   "ruce": 2.7,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 12024
+ },
+ "kh-cepice-muz-vysivana-cepice-tonzura": {
+  "stav": "ok",
+  "vrstva": "helma-vysivana-cepice-tonzura",
+  "zdroj": "kh-cepice-muz-vysivana-cepice-tonzura-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 27.9,
+   "ruce": 2.6,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 12919
  }
 }
