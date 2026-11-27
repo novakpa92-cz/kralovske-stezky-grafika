@@ -1,0 +1,236 @@
+{
+ "kz-odev-zena-saty-s-vleckou-a-kozesinou": {
+  "stav": "ok",
+  "vrstva": "odev-zena-saty-s-vleckou-a-kozesinou",
+  "zdroj": "kz-odev-zena-saty-s-vleckou-a-kozesinou-3_00001_.png",
+  "odchylky": {
+   "paze": 0.43,
+   "hlava": 2.1,
+   "ruce": 2.7,
+   "chodidla": 54.3,
+   "pozadi": 0.1,
+   "oblicej": 2.6
+  },
+  "px": 340464
+ },
+ "kz-odev-muz-kratky-kabatec": {
+  "stav": "ok",
+  "vrstva": "odev-muz-kratky-kabatec",
+  "zdroj": "kz-odev-muz-kratky-kabatec-4_00001_.png",
+  "odchylky": {
+   "paze": 0.56,
+   "hlava": 2.0,
+   "ruce": 2.6,
+   "chodidla": 43.1,
+   "pozadi": 0.1,
+   "oblicej": 2.8
+  },
+  "px": 311490
+ },
+ "kz-odev-muz-mestansky-kabat": {
+  "stav": "ok",
+  "vrstva": "odev-muz-mestansky-kabat",
+  "zdroj": "kz-odev-muz-mestansky-kabat-3_00001_.png",
+  "odchylky": {
+   "paze": 0.43,
+   "hlava": 2.0,
+   "ruce": 2.6,
+   "chodidla": 46.2,
+   "pozadi": 0.1,
+   "oblicej": 2.9
+  },
+  "px": 318930
+ },
+ "kz-odev-zena-mestanske-saty": {
+  "stav": "ok",
+  "vrstva": "odev-zena-mestanske-saty",
+  "zdroj": "kz-odev-zena-mestanske-saty-4_00001_.png",
+  "odchylky": {
+   "paze": 0.36,
+   "hlava": 2.1,
+   "ruce": 2.7,
+   "chodidla": 57.0,
+   "pozadi": 0.1,
+   "oblicej": 2.7
+  },
+  "px": 344948
+ },
+ "kz-odev-zena-svatecni-saty-se-zlatym-lemem": {
+  "stav": "ok",
+  "vrstva": "odev-zena-svatecni-saty-se-zlatym-lemem",
+  "zdroj": "kz-odev-zena-svatecni-saty-se-zlatym-lemem-3_00001_.png",
+  "odchylky": {
+   "paze": 0.32,
+   "hlava": 2.1,
+   "ruce": 2.7,
+   "chodidla": 59.5,
+   "pozadi": 0.1,
+   "oblicej": 2.7
+  },
+  "px": 332389
+ },
+ "kz-odev-zena-zivutek-se-sukni": {
+  "stav": "ok",
+  "vrstva": "odev-zena-zivutek-se-sukni",
+  "zdroj": "kz-odev-zena-zivutek-se-sukni-4_00001_.png",
+  "odchylky": {
+   "paze": 0.93,
+   "hlava": 2.1,
+   "ruce": 2.7,
+   "chodidla": 61.5,
+   "pozadi": 0.0,
+   "oblicej": 2.7
+  },
+  "px": 334424
+ },
+ "kz-plast-muz-kozesinovy": {
+  "stav": "vyrazeno_okem",
+  "duvod": "plášť chybí"
+ },
+ "kz-plast-muz-s-kapi-a-lemem": {
+  "stav": "vyrazeno_okem",
+  "duvod": "plášť chybí"
+ },
+ "kz-plast-zena-kozesinovy": {
+  "stav": "vyrazeno_okem",
+  "duvod": "plášť chybí"
+ },
+ "kz-plast-zena-s-kapi-a-lemem": {
+  "stav": "vyrazeno_okem",
+  "duvod": "plášť chybí"
+ },
+ "kz-zbroj-muz-brigantina-s-platovymi-rameny": {
+  "stav": "ok",
+  "vrstva": "zbroj-muz-brigantina-s-platovymi-rameny",
+  "zdroj": "kz-zbroj-muz-brigantina-s-platovymi-rameny-1_00001_.png",
+  "odchylky": {
+   "paze": 0.14,
+   "hlava": 2.0,
+   "ruce": 2.7,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 2.9
+  },
+  "px": 178677
+ },
+ "kz-zbroj-muz-krouzkova-kosile": {
+  "stav": "vyrazeno_okem",
+  "duvod": "plátový krunýř místo kroužků"
+ },
+ "kz-zbroj-muz-lovecky-kabatec": {
+  "stav": "vyrazeno_okem",
+  "duvod": "nic nenakresleno"
+ },
+ "kz-zbroj-muz-milanska-zbroj": {
+  "stav": "vyrazeno_okem",
+  "duvod": "jen kousky plátů"
+ },
+ "kz-zbroj-muz-supinova-zbroj": {
+  "stav": "ok",
+  "vrstva": "zbroj-muz-supinova-zbroj",
+  "zdroj": "kz-zbroj-muz-supinova-zbroj-2_00001_.png",
+  "odchylky": {
+   "paze": 0.03,
+   "hlava": 1.9,
+   "ruce": 2.7,
+   "chodidla": 2.1,
+   "pozadi": 0.0,
+   "oblicej": 2.8
+  },
+  "px": 139270
+ },
+ "kz-zbroj-muz-vycpavana-kazajka": {
+  "stav": "vyrazeno_okem",
+  "duvod": "nic nenakresleno"
+ },
+ "kz-zbroj-zena-krouzkova-kosile": {
+  "stav": "vyrazeno_okem",
+  "duvod": "plátová zástěra místo kroužků"
+ },
+ "kz-zbroj-zena-lovecky-kabatec": {
+  "stav": "vyrazeno_okem",
+  "duvod": "nic nenakresleno"
+ },
+ "kz-zbroj-zena-milanska-zbroj": {
+  "stav": "vyrazeno_okem",
+  "duvod": "jen kousky plátů"
+ },
+ "kz-zbroj-zena-supinova-zbroj": {
+  "stav": "ok",
+  "vrstva": "zbroj-zena-supinova-zbroj",
+  "zdroj": "kz-zbroj-zena-supinova-zbroj-1_00001_.png",
+  "odchylky": {
+   "paze": 0.61,
+   "hlava": 2.0,
+   "ruce": 2.8,
+   "chodidla": 2.4,
+   "pozadi": 0.1,
+   "oblicej": 2.6
+  },
+  "px": 147284
+ },
+ "kz-zbroj-zena-vycpavana-kazajka": {
+  "stav": "vyrazeno_okem",
+  "duvod": "nic nenakresleno"
+ },
+ "kh-helma-muz-barbuta": {
+  "stav": "ok",
+  "vrstva": "helma-barbuta",
+  "zdroj": "kh-helma-muz-barbuta-1_00001_.png",
+  "odchylky": {
+   "paze": 0.02,
+   "hlava": 60.0,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 67.6
+  },
+  "px": 29634
+ },
+ "kh-helma-muz-bascinet-s-psi-kuklou": {
+  "stav": "ok",
+  "vrstva": "helma-bascinet-s-psi-kuklou",
+  "zdroj": "kh-helma-muz-bascinet-s-psi-kuklou-2_00001_.png",
+  "odchylky": {
+   "paze": 0.16,
+   "hlava": 55.2,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 67.4
+  },
+  "px": 31548
+ },
+ "kh-helma-muz-zelezna-cepice": {
+  "stav": "ok",
+  "vrstva": "helma-zelezna-cepice",
+  "zdroj": "kh-helma-muz-zelezna-cepice-1_00001_.png",
+  "odchylky": {
+   "paze": 0.2,
+   "hlava": 57.2,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 59.0
+  },
+  "px": 28526
+ },
+ "kh-helma-zena-barbuta": {
+  "stav": "ok",
+  "vrstva": "helma-barbuta-zena",
+  "zdroj": "kh-helma-zena-barbuta-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 66.8,
+   "ruce": 2.8,
+   "chodidla": 2.3,
+   "pozadi": 0.1,
+   "oblicej": 78.0
+  },
+  "px": 37758
+ },
+ "kh-helma-zena-zelezna-cepice": {
+  "stav": "vyrazeno_okem",
+  "duvod": "změnil obličej"
+ }
+}
