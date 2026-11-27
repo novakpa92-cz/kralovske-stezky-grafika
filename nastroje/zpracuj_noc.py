@@ -36,7 +36,7 @@ def zpracuj_hlavu(slozka, pref):
         print(pref, "NEPROŠLO", [v for *_, v in kand]); return None
     _, _, f, v = dobre[0]
     vyl = None
-    if druh == "cepice" and vl != "bez":
+    if False and druh == "cepice" and vl != "bez":   # vyloučení barvy vlasů ničilo hnědé čepice
         vyl = ndimage.binary_erosion(np.array(Image.open(P / f"vlasy-{sx}-{vl}.webp"))[..., 3] > 200, iterations=2)
     im, px = vrstva(zaklad, f, sx, bez=("chodidla", "ruce"), len_ven=False, vylouc=vyl, jen_nad=520)
     nazev = f"helma-{slug}" + ("-zena" if sx == "zena" else "") + (f"-{vl}" if druh == "cepice" else "")

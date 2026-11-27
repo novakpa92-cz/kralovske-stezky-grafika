@@ -84,20 +84,102 @@
   "px": 334424
  },
  "kz-plast-muz-kozesinovy": {
-  "stav": "vyrazeno_okem",
-  "duvod": "plášť chybí"
+  "stav": "nic_nenakresleno",
+  "varianty": [
+   [
+    "kz-plast-muz-kozesinovy-5_00001_.png",
+    {
+     "paze": 0.02,
+     "hlava": 2.0,
+     "ruce": 2.6,
+     "chodidla": 29.7,
+     "pozadi": 0.0,
+     "oblicej": 2.8
+    }
+   ],
+   [
+    "kz-plast-muz-kozesinovy-6_00001_.png",
+    {
+     "paze": 0.03,
+     "hlava": 2.0,
+     "ruce": 2.6,
+     "chodidla": 24.0,
+     "pozadi": 0.1,
+     "oblicej": 2.9
+    }
+   ]
+  ],
+  "px": 9142
  },
  "kz-plast-muz-s-kapi-a-lemem": {
-  "stav": "vyrazeno_okem",
-  "duvod": "plášť chybí"
+  "stav": "ok",
+  "vrstva": "plast-muz-s-kapi-a-lemem",
+  "zdroj": "kz-plast-muz-s-kapi-a-lemem-5_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 2.1,
+   "ruce": 2.6,
+   "chodidla": 19.9,
+   "pozadi": 0.0,
+   "oblicej": 2.9
+  },
+  "px": 107381
  },
  "kz-plast-zena-kozesinovy": {
-  "stav": "vyrazeno_okem",
-  "duvod": "plášť chybí"
+  "stav": "nic_nenakresleno",
+  "varianty": [
+   [
+    "kz-plast-zena-kozesinovy-5_00001_.png",
+    {
+     "paze": 0.22,
+     "hlava": 2.1,
+     "ruce": 2.6,
+     "chodidla": 29.9,
+     "pozadi": 0.1,
+     "oblicej": 2.8
+    }
+   ],
+   [
+    "kz-plast-zena-kozesinovy-6_00001_.png",
+    {
+     "paze": 0.37,
+     "hlava": 2.2,
+     "ruce": 2.7,
+     "chodidla": 39.2,
+     "pozadi": 0.2,
+     "oblicej": 3.2
+    }
+   ]
+  ],
+  "px": 39267
  },
  "kz-plast-zena-s-kapi-a-lemem": {
-  "stav": "vyrazeno_okem",
-  "duvod": "plášť chybí"
+  "stav": "nic_nenakresleno",
+  "varianty": [
+   [
+    "kz-plast-zena-s-kapi-a-lemem-5_00001_.png",
+    {
+     "paze": 0.06,
+     "hlava": 2.1,
+     "ruce": 2.7,
+     "chodidla": 45.7,
+     "pozadi": 0.1,
+     "oblicej": 2.8
+    }
+   ],
+   [
+    "kz-plast-zena-s-kapi-a-lemem-6_00001_.png",
+    {
+     "paze": 0.58,
+     "hlava": 2.3,
+     "ruce": 2.7,
+     "chodidla": 46.4,
+     "pozadi": 0.1,
+     "oblicej": 3.6
+    }
+   ]
+  ],
+  "px": 75917
  },
  "kz-zbroj-muz-brigantina-s-platovymi-rameny": {
   "stav": "ok",
@@ -114,16 +196,26 @@
   "px": 178677
  },
  "kz-zbroj-muz-krouzkova-kosile": {
-  "stav": "vyrazeno_okem",
-  "duvod": "plátový krunýř místo kroužků"
+  "stav": "ok",
+  "vrstva": "zbroj-muz-krouzkova-kosile",
+  "zdroj": "kz-zbroj-muz-krouzkova-kosile-6_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 2.0,
+   "ruce": 2.7,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 2.8
+  },
+  "px": 223725
  },
  "kz-zbroj-muz-lovecky-kabatec": {
   "stav": "vyrazeno_okem",
-  "duvod": "nic nenakresleno"
+  "duvod": "jen hnědé rukávy, trup lněný"
  },
  "kz-zbroj-muz-milanska-zbroj": {
   "stav": "vyrazeno_okem",
-  "duvod": "jen kousky plátů"
+  "duvod": "hruď bez plátu"
  },
  "kz-zbroj-muz-supinova-zbroj": {
   "stav": "ok",
@@ -141,19 +233,49 @@
  },
  "kz-zbroj-muz-vycpavana-kazajka": {
   "stav": "vyrazeno_okem",
-  "duvod": "nic nenakresleno"
+  "duvod": "košile s knoflíky, ne kazajka"
  },
  "kz-zbroj-zena-krouzkova-kosile": {
-  "stav": "vyrazeno_okem",
-  "duvod": "plátová zástěra místo kroužků"
+  "stav": "ok",
+  "vrstva": "zbroj-zena-krouzkova-kosile",
+  "zdroj": "kz-zbroj-zena-krouzkova-kosile-6_00001_.png",
+  "odchylky": {
+   "paze": 0.07,
+   "hlava": 2.1,
+   "ruce": 2.8,
+   "chodidla": 2.5,
+   "pozadi": 0.1,
+   "oblicej": 2.6
+  },
+  "px": 253344
  },
  "kz-zbroj-zena-lovecky-kabatec": {
-  "stav": "vyrazeno_okem",
-  "duvod": "nic nenakresleno"
+  "stav": "ok",
+  "vrstva": "zbroj-zena-lovecky-kabatec",
+  "zdroj": "kz-zbroj-zena-lovecky-kabatec-5_00001_.png",
+  "odchylky": {
+   "paze": 0.13,
+   "hlava": 2.1,
+   "ruce": 2.6,
+   "chodidla": 2.4,
+   "pozadi": 0.1,
+   "oblicej": 2.8
+  },
+  "px": 262778
  },
  "kz-zbroj-zena-milanska-zbroj": {
-  "stav": "vyrazeno_okem",
-  "duvod": "jen kousky plátů"
+  "stav": "ok",
+  "vrstva": "zbroj-zena-milanska-zbroj",
+  "zdroj": "kz-zbroj-zena-milanska-zbroj-5_00001_.png",
+  "odchylky": {
+   "paze": 0.59,
+   "hlava": 2.1,
+   "ruce": 2.9,
+   "chodidla": 3.4,
+   "pozadi": 0.1,
+   "oblicej": 2.6
+  },
+  "px": 345461
  },
  "kz-zbroj-zena-supinova-zbroj": {
   "stav": "ok",
@@ -170,8 +292,18 @@
   "px": 147284
  },
  "kz-zbroj-zena-vycpavana-kazajka": {
-  "stav": "vyrazeno_okem",
-  "duvod": "nic nenakresleno"
+  "stav": "ok",
+  "vrstva": "zbroj-zena-vycpavana-kazajka",
+  "zdroj": "kz-zbroj-zena-vycpavana-kazajka-6_00001_.png",
+  "odchylky": {
+   "paze": 0.11,
+   "hlava": 2.1,
+   "ruce": 2.6,
+   "chodidla": 2.4,
+   "pozadi": 0.1,
+   "oblicej": 2.7
+  },
+  "px": 269858
  },
  "kh-helma-muz-barbuta": {
   "stav": "ok",
@@ -230,7 +362,101 @@
   "px": 37758
  },
  "kh-helma-zena-zelezna-cepice": {
-  "stav": "vyrazeno_okem",
-  "duvod": "změnil obličej"
+  "stav": "ok",
+  "vrstva": "helma-zelezna-cepice-zena",
+  "zdroj": "kh-helma-zena-zelezna-cepice-3_00001_.png",
+  "odchylky": {
+   "paze": 0.02,
+   "hlava": 38.5,
+   "ruce": 2.8,
+   "chodidla": 2.3,
+   "pozadi": 0.1,
+   "oblicej": 3.0
+  },
+  "px": 12334
+ },
+ "kh-helma-zena-bascinet-s-psi-kuklou": {
+  "stav": "ok",
+  "vrstva": "helma-bascinet-s-psi-kuklou-zena",
+  "zdroj": "kh-helma-zena-bascinet-s-psi-kuklou-1_00001_.png",
+  "odchylky": {
+   "paze": 0.02,
+   "hlava": 56.6,
+   "ruce": 2.8,
+   "chodidla": 2.3,
+   "pozadi": 0.1,
+   "oblicej": 46.5
+  },
+  "px": 37238
+ },
+ "kh-cepice-muz-kozena-cepice-copanek": {
+  "stav": "ok",
+  "vrstva": "helma-kozena-cepice-copanek",
+  "zdroj": "kh-cepice-muz-kozena-cepice-copanek-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 25.6,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 10810
+ },
+ "kh-cepice-muz-kozena-cepice-dlouhe": {
+  "stav": "ok",
+  "vrstva": "helma-kozena-cepice-dlouhe",
+  "zdroj": "kh-cepice-muz-kozena-cepice-dlouhe-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 20.7,
+   "ruce": 2.6,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 14933
+ },
+ "kh-cepice-muz-kozena-cepice-kratke": {
+  "stav": "ok",
+  "vrstva": "helma-kozena-cepice-kratke",
+  "zdroj": "kh-cepice-muz-kozena-cepice-kratke-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 27.9,
+   "ruce": 2.6,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.1
+  },
+  "px": 11524
+ },
+ "kh-cepice-muz-kozena-cepice-kudrnate": {
+  "stav": "ok",
+  "vrstva": "helma-kozena-cepice-kudrnate",
+  "zdroj": "kh-cepice-muz-kozena-cepice-kudrnate-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 23.3,
+   "ruce": 2.6,
+   "chodidla": 2.2,
+   "pozadi": 0.1,
+   "oblicej": 3.3
+  },
+  "px": 11426
+ },
+ "kh-cepice-muz-kozena-cepice-ofina": {
+  "stav": "ok",
+  "vrstva": "helma-kozena-cepice-ofina",
+  "zdroj": "kh-cepice-muz-kozena-cepice-ofina-1_00001_.png",
+  "odchylky": {
+   "paze": 0.0,
+   "hlava": 24.1,
+   "ruce": 2.6,
+   "chodidla": 2.1,
+   "pozadi": 0.1,
+   "oblicej": 3.2
+  },
+  "px": 20530
  }
 }
