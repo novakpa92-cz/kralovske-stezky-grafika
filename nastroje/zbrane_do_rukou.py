@@ -35,13 +35,16 @@ ZBRANE = {
 # obouruční meče hrotem na zemi (ruka na jílci), ostatní obouruční svisle patou na zemi (stoji)
 DYKY = {"dyka", "rondel", "tesak", "krysaruv-tesak", "lovecky-tesak"}
 DVOU_MECE = {"dlouhy-mec", "jeskuv-mec", "cepel-cerneho-rytire", "dvourucni-mec"}
-NAKLON_JEDNORUCNI, NAKLON_DYKA, NAKLON_LEVA, NAKLON_KUSE = 34, 50, 36, 35
+NAKLON_JEDNORUCNI, NAKLON_DYKA, NAKLON_LEVA, NAKLON_KUSE = 51, 60, 20, 35   # Pavel 27. 11.: meče a dýky plošeji přes tělo, levá pěst navazuje na zápěstí
 LEVA = ("dyka", "rondel", "tesak", "lovecky-tesak", "krysaruv-tesak")   # 1.0-1-6: boj dvěma zbraněmi — druhá zbraň v levé ruce (zrcadlově)
 STIT_NAKLON = 15               # Pavel 21:31: štít níž před levým bokem, víc nakloněný
 STIT_POSUN = (-65, 40)         # střed štítu vůči levé pěsti (px)
-NAKLON_SE_STITEM = 47
+# Pavel 27. 11. (vzor na muži): štíty výš u pasu a víc nakloněné horní hranou k tělu, pavéza menší, pěstní štít v pěsti
+STIT_POLOHA = {"*": (-65, -32, 30, 1.0), "stit-mistrovsky": (-65, -45, 30, 1.0), "stit-malovana-paveza": (-150, -55, 15, .8),
+               "stit-paveza": (-150, -55, 15, .8), "stit-pestni": (-5, -38, 15, 1.0)}
+NAKLON_SE_STITEM = 61         # Pavel 27. 11.: se štítem čepel plošeji přes tělo
 HLAVICE = {"sekyrka", "palcat", "hejtmanuv-palcat", "valecne-kladivo", "remdih", "bojova-sekera", "cakan"}   # topůrko k opasku
-NAKLON_HLAVICE = 52
+NAKLON_HLAVICE = 67               # Pavel 27. 11.: sekery, palcáty, řemdih plošeji k opasku
 SEKERY = {"sekyrka", "bojova-sekera", "cakan"}   # Pavel: u nakloněných seker ostří vždy k zemi
 def ostri_vlevo(im):
     """Je ostří (větší část hlavice) vlevo od topůrka? Hlavice = horní čtvrtina obrázku."""
@@ -92,8 +95,20 @@ def jilec(im):
     lo = int(H * .55); gy = lo + int(np.argmax(w[lo:int(H * .93)]))
     if w[gy] > np.median(w[lo:]) * 2.2: return min(.97, (gy + (H - 1)) / 2 / H + .01)
     return .85
+OTOCIT = {"savle", "cakan"}   # Pavel 27. 11.: šavle ostřím dolů, čakan zobcem dolů
+ROZSIR = {"zbran-bojova-sekera": 1.6, "zbran-cakan": 1.6, "zbran-remdih": 1.3}   # Pavel 27. 11.: moc tenké — rozšířit
+
+def jilec_u_zastity(im, H, strana="prava", sx="muz"):
+    """Pavel 27. 11.: pěst hned pod záštitou (u okraje krytu), ne uprostřed rukojeti. Bez záštity jako jilec()."""
+    a = np.array(im)[..., 3] > 80; Hi = a.shape[0]; w = a.sum(1)
+    lo = int(Hi * .55); gy = lo + int(np.argmax(w[lo:int(Hi * .93)]))
+    if w[gy] > np.median(w[lo:]) * 2.2:
+        p = info.get(f"{strana}-{sx}") or {"top": 770, "bot": 907}
+        pul = (p["bot"] - p["top"]) / 2 - 6                 # polovina výšky pěsti (px na plátně)
+        return min(.97, (gy + 2) / Hi + pul / H)
+    return jilec(im)
 def poloz(name, H, grip, cil, rot, zrcadlo=False):
-    im = obsah(name); s = H / im.size[1]; im = im.resize((max(1, int(im.size[0] * s)), int(H)), Image.LANCZOS)
+    im = obsah(name); s = H / im.size[1]; im = im.resize((max(1, int(im.size[0] * s * ROZSIR.get(name, 1))), int(H)), Image.LANCZOS)
     if zrcadlo:
         im = im.transpose(Image.FLIP_LEFT_RIGHT)
     gx, gy = grip[0] * im.size[0], grip[1] * im.size[1]
@@ -147,8 +162,8 @@ for sx in ("muz", "zena"):
         if druh == "visi" and z in DVOU_MECE:            # hrotem na zemi: délka tak, aby hrot právě došel na zem
             gy = jilec(im); H = (ZEM - P["y"]) / gy; out = poloz(n, H, (stred_x(im, gy), gy), (P["x"], P["y"]), 180)
         elif druh == "visi" and z != "prak":            # čepel nahoru šikmo přes tělo, pěst natočená se zbraní
-            gy = jilec(im); u = -(NAKLON_DYKA if z in DYKY else NAKLON_HLAVICE if z in HLAVICE else NAKLON_JEDNORUCNI)
-            zr = z in SEKERY and ostri_vlevo(im)         # po naklonění doprava by ostří mířilo nahoru → zrcadlit
+            gy = jilec_u_zastity(im, H, "prava", sx); u = -(NAKLON_DYKA if z in DYKY else NAKLON_HLAVICE if z in HLAVICE else NAKLON_JEDNORUCNI)
+            zr = bool(z in SEKERY and ostri_vlevo(im)) ^ (z in OTOCIT)   # po naklonění doprava by ostří mířilo nahoru → zrcadlit
             gx = 1 - stred_x(im, gy) if zr else stred_x(im, gy)
             out = v_pesti(n, H, (gx, gy), "prava", sx, u, zrcadlo=zr)
             if z not in DYKY:                            # se štítem víc šikmo (hlavice stejně)
@@ -165,10 +180,11 @@ for sx in ("muz", "zena"):
         uloz(out, f"zbran-ruka-{z}-{sx}")
     for z in LEVA:                                     # 1.0-1-6: zbraň v levé pěsti (zrcadlo pravé)
         n = f"zbran-{z}"; H = ZBRANE[z][1] * PX; im = obsah(n)
-        gy = jilec(im); out = v_pesti(n, H, (1 - stred_x(im, gy), gy), "leva", sx, NAKLON_LEVA, zrcadlo=True, zaklad=180)
+        gy = jilec_u_zastity(im, H, "leva", sx); out = v_pesti(n, H, (1 - stred_x(im, gy), gy), "leva", sx, NAKLON_LEVA, zrcadlo=True, zaklad=180)
         uloz(out, f"zbran-leva-{z}-{sx}")
     for s_, cm in STITY.items():
-        H = cm * PX; out = poloz(s_, H, (.5, .45), (Lv["x"] + STIT_POSUN[0], Lv["y"] + STIT_POSUN[1]), STIT_NAKLON); uloz(out, f"stit-ruka-{s_[5:]}-{sx}")   # štít před tělem na levém předloktí, 1.0-1-6: mírně nakloněný (Pavel)
+        dx, dy, rot, k = STIT_POLOHA.get(s_, STIT_POLOHA["*"])
+        H = cm * PX * k; out = poloz(s_, H, (.5, .45), (Lv["x"] + dx, Lv["y"] + dy), rot); uloz(out, f"stit-ruka-{s_[5:]}-{sx}")   # štít před tělem na levém předloktí, 1.0-1-6: mírně nakloněný (Pavel)
     out = poloz("svetlo-louc", 55 * PX, (stred_x(obsah("svetlo-louc"), .62), .62), (Lv["x"], Lv["y"]), 0); uloz(out, f"svetlo-louc-ruka-{sx}")
 json.dump(info, open(POS / "ruce.json", "w"), indent=1)
 j = json.load(open(POS / "skryva.json"))
